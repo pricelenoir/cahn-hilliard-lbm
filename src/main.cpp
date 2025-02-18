@@ -3,14 +3,14 @@
 #include <vector>
 #include <cmath>
 #include "json.hpp"
+#include "boundaryClassifier.hpp"
+#include "boundaryConditions.hpp"
+#include "collideAndStream.hpp"
 #include "constants.hpp"
 #include "domain.hpp"
-#include "mathOperations.hpp"
-#include "macroscopic.hpp"
-#include "boundaryConditions.hpp"
 #include "equilibrium.hpp"
-#include "collideAndStream.hpp"
-#include "edgeNormalClassifier.hpp"
+#include "macroscopic.hpp"
+#include "mathOperations.hpp"
 
 using json = nlohmann::json;
 using namespace std;
@@ -37,9 +37,11 @@ int main(int argc, char** argv) {
     Domain domain(nX, nY);
     domain.initialize(config, constants);
 
-    // Classify edge nodes and normal nodes
-    identifyEdges(domain);
+    // Identify and classify nodes with boundary conditions
+    identifyBoundaryNodes(domain);
     classifyBC(domain);
+    identifyInletNodes(domain);
+    identifyOutletNodes(domain);
 
     // Initial calculation of mu
     laplace(domain, &Node::phi, &Node::oldMu);
@@ -74,7 +76,9 @@ int main(int argc, char** argv) {
             macroscopic(domain, constants);
 
             // Update boundary conditions
-            boundryConfig(domain);
+            macroscopicInflowBC(domain);
+            macroscopicOutflowBC(domain);
+            macroscopicWallBC(domain);
 
             // Update old mu values
             for (long i = 0; i < nX; i++) {
@@ -100,10 +104,8 @@ int main(int argc, char** argv) {
             equilibriumH(domain);
             sourceH(domain, constants);
             
-            // Zou He BC
-            // Wall
-            // Inlet
-            // Outlet
+            // Zou He boundary condition
+            zouHeBC(domain);
 
             // Collide and stream steps
             collide(domain);

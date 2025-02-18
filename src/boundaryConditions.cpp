@@ -3,34 +3,22 @@
 
 using namespace std;
 
-void neumannBC() {
+void neumannBC(Domain &domain) {
     return;
 }
 
-void neumann2BC() {
+void macroscopicInflowBC(Domain &domain) {
     return;
 }
 
-void macroscopicInflow() {
+void macroscopicOutflowBC(Domain &domain) {
     return;
 }
 
-void macroscopicPressureInflow() {
+void macroscopicWallBC(Domain &domain) {
     return;
 }
 
-void macroscopicOutflow() {
-    return;
-}
-
-void macroscopicWallBC() {
-    return;
-}
-
-void zouHeBC() {
-    return;
-}
-
-void boundryConfig(Domain &domain) {
+void zouHeBC(Domain &domain) {
     return;
 }

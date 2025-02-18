@@ -7,25 +7,35 @@ class Node {
 public:
     long x;
     long y;
+
     int id;
+    int normalNodeID;
     /* 
-    Node ID key:
-        0 = General fluid node
-        3 = Inlet node
-        4 = Outlet node
-        20 = Solid node
-        21-29 = Fluid node next to solid
-          21 = ne
-          22 = e
-          23 = se
-          24 = n
-          25 = middle
-          26 = s
-          27 = nw
-          28 = w
-          29 = sw
+    Node ID Key:
+    ┌────---┬───────────────────────────┬───────────┐
+    │ ID    │ Description               │ Normal ID │
+    ├────---┼───────────────────────────┼───────────┤
+    │ 0     │ General fluid node        │           │
+    │ 20    │ Solid node                │           │
+    │ 21-29 │ Fluid node next to solid  │           │
+    ├────---┼───────────────────────────┼───────────┤
+    │ 21    │ NE                        │ -5        │
+    │ 22    │ E                         │ -1        │
+    │ 23    │ SE                        │ -7        │
+    │ 24    │ N                         │ -3        │
+    │ 25    │ Middle                    │           │
+    │ 26    │ S                         │ -4        │
+    │ 27    │ NW                        │ -8        │
+    │ 28    │ W                         │ -2        │
+    │ 29    │ SW                        │ -6        │
+    └────---┴───────────────────────────┴───────────┘
     */
-    bool isEdge;
+
+    // Node classification flags
+    bool isBoundary; // Boundary node (wall or internal solid)
+    bool isConcave;  // Concave solid node
+    bool isInlet;    // Inlet boundary condition
+    bool isOutlet;   // Outlet boundary condition
 
     // Physical properties
     double uX;       // Velocity in x direction
@@ -82,10 +92,6 @@ public:
     std::vector<double> hOut;
     std::vector<double> hEq;
     std::vector<double> sourceH;
-
-    // std::vector<int> nodeLookup;         // Node look-up table
-    // std::vector<int> inletNeighbors;     // Inlet neighbor look-up table
-    // std::vector<int> outletNeighbors;    // Outlet neighbor look-up table
 
     Node(int posX, int posY);
 };

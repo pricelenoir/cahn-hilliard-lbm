@@ -1,6 +1,14 @@
 #include "node.hpp"
 
-Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord), id(0) {
+Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
+	id = 0;
+
+	isBoundary = false;
+	isConcave = false;
+	isInlet = false;
+	isOutlet = false;
+	normalNodeID = 0;
+	
 	uX = 0;
 	uY = 0;
 	
