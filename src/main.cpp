@@ -43,24 +43,26 @@ int main(int argc, char** argv) {
     identifyInletNodes(domain);
     identifyOutletNodes(domain);
 
-    // Initial calculation of mu
-    laplace(domain, &Node::phi, &Node::oldMu);
-    for (int i = 0; i < nX; i++) {
-        for (int j = 0; j < nY; j++) {
+    for (long i = 0; i < nX; i++) {
+        for (long j = 0; j < nY; j++) {
             Node* node = domain.nodes[i][j];
+
+            // Initial calculation of mu
+            laplace(node, domain, &Node::phi, &Node::oldMu);
             node->oldMu = node->mu0 - (constants.k * node->oldMu);
+
+            // Gradient calculations
+            laplace(node, domain, &Node::oldMu, &Node::d2mu);
+            derivativeY(node, domain, &Node::uX, &Node::dudy);
+            derivativeX(node, domain, &Node::uY, &Node::dvdx);
+            derivativeX(node, domain, &Node::uX, &Node::dudx);
+            derivativeY(node, domain, &Node::uY, &Node::dvdy);
+            eGrad(node, domain, &Node::uX, &Node::eDudy);
+            eGrad(node, domain, &Node::uY, &Node::eDvdx);
+
+            node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
         }
     }
-
-    // Gradient calculations
-    laplace(domain, &Node::oldMu, &Node::d2mu);
-    derivativeY(domain, &Node::uX, &Node::dudy);
-    derivativeX(domain, &Node::uY, &Node::dvdx);
-    derivativeX(domain, &Node::uX, &Node::dudx);
-    derivativeY(domain, &Node::uY, &Node::dvdy);
-    eGrad(domain, &Node::uX, &Node::eDudy);
-    eGrad(domain, &Node::uY, &Node::eDvdx);
-    uSqr(domain);
 
     // Initial equilibrium distribution based on the macroscopic values
     equilibriumG(domain);
@@ -80,27 +82,28 @@ int main(int argc, char** argv) {
             macroscopicOutflowBC(domain);
             macroscopicWallBC(domain);
 
-            // Update old mu values
             for (long i = 0; i < nX; i++) {
                 for (long j = 0; j < nY; j++) {
-                    domain.nodes[i][j]->oldMu = domain.nodes[i][j]->mu;
+                    Node* node = domain.nodes[i][j];
+
+                    node->oldMu = domain.nodes[i][j]->mu;
+
+                    // Gradient calculations
+                    laplace(node, domain, &Node::oldMu, &Node::d2mu);
+                    derivativeY(node, domain, &Node::uX, &Node::dudy);
+                    derivativeX(node, domain, &Node::uY, &Node::dvdx);
+                    derivativeX(node, domain, &Node::uX, &Node::dudx);
+                    derivativeY(node, domain, &Node::uY, &Node::dvdy);
+                    eGrad(node, domain, &Node::uX, &Node::eDudy);
+                    eGrad(node, domain, &Node::uY, &Node::eDvdx);
+
+                    node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
                 }
             }
-
-            // Gradient calculations
-            laplace(domain, &Node::mu, &Node::d2mu);
-            derivativeY(domain, &Node::uX, &Node::dudy);
-            derivativeX(domain, &Node::uY, &Node::dvdx);
-            derivativeX(domain, &Node::uX, &Node::dudx);
-            derivativeY(domain, &Node::uY, &Node::dvdy);
-            eGrad(domain, &Node::uX, &Node::eDudy);
-            eGrad(domain, &Node::uY, &Node::eDvdx);
-            uSqr(domain);
 
             // Update equilibrium values and sources
             equilibriumG(domain);
             sourceG(domain, constants);
-
             equilibriumH(domain);
             sourceH(domain, constants);
             

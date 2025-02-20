@@ -69,46 +69,32 @@ void sourceG(Domain &domain, Constants &constants) {
     double gX = constants.gX;
     double gY = constants.gY;
 
-    // Calculate gradient of phi
-    derivativeX(domain, &Node::phi, &Node::dphidx);
-    derivativeY(domain, &Node::phi, &Node::dphidy);
-
-    // Calculate gradient of pStar
-    derivativeX(domain, &Node::pStar, &Node::dpStardx);
-    derivativeY(domain, &Node::pStar, &Node::dpStardy);
-
-    // Force calculation
     Node* node;
     for (long i = 0; i < domain.nX; i++) {
         for (long j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
-            // Update nu
+
             node-> nu = (nu1 * (node->rho - rho2) + nu2 * (rho1 - node->rho)) / (rho1 - rho2);
+
+            // Gradient calculations of phi
+            derivativeX(node, domain, &Node::phi, &Node::dphidx);
+            derivativeY(node, domain, &Node::phi, &Node::dphidy);
+
+            // Gradient calculations of pStar
+            derivativeX(node, domain, &Node::pStar, &Node::dpStardx);
+            derivativeY(node, domain, &Node::pStar, &Node::dpStardy);
 
             // Calculate intermediate value for force calculation below
             node->tmp = node->rho * node->nu * (node->dudx + node->dvdy + node->dvdx + node->dudy);
-        }
-    }
+            derivativeX(node, domain, &Node::tmp, &Node::forceX);
+            derivativeY(node, domain, &Node::tmp, &Node::forceY);
 
-    // Intermediate gradient calculation
-    derivativeX(domain, &Node::tmp, &Node::forceX);
-    derivativeY(domain, &Node::tmp, &Node::forceY);
-
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
-            node = domain.nodes[i][j];
             // Calculate force (forceX and forceY currently hold intermediate gradient values)
             node->forceX = gX * node->rho + node->forceX - (1/3) * node->pStar * (rho1 - rho2) * node->dphidx + node->mu * node->dphidx;
             node->forceY = gY * node->rho + node->forceY - (1/3) * node->pStar * (rho1 - rho2) * node->dphidy + node->mu * node->dphidy;
-        }
-    }
 
-    long eU = 0;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
-            node = domain.nodes[i][j];
-
-             if (node->id != 20) {
+            long eU = 0;
+            if (node->id != 20) {
                 for (int k; k < 9; k++) {
                     eU = e[k][0] * node->uX + e[k][1] * node->uY;
                     node->sourceG[k] = 0.5 * w[k] * (3 * (e[k][0] - node->uX) * node->forceX + 3 * (e[k][1] - node->uY) * node->forceY + 9 * eU * (e[k][0] * node->forceX + e[k][1] * node->forceY));
@@ -125,21 +111,21 @@ void sourceH(Domain &domain, Constants &constants) {
     double beta = constants.beta;
     double k = constants.k;
 
-    // Calculate gradient of phi
-    derivativeX(domain, &Node::phi, &Node::dphidx);
-    derivativeY(domain, &Node::phi, &Node::dphidy);
-
     long eU = 0;
     double L2NormEGradPhi, interfaceNormalX, interfaceNormalY;
+    double L2NormThrshld = 0.00005;
     Node* node;
     for (long i = 0; i < domain.nX; i++) {
         for (long j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
-            L2NormEGradPhi = sqrt(pow(node->dphidx, 2) + pow(node->dphidy, 2));
+            // Gradient calculations of phi
+            derivativeX(node, domain, &Node::phi, &Node::dphidx);
+            derivativeY(node, domain, &Node::phi, &Node::dphidy);
+
+            double L2NormEGradPhi = sqrt(pow(node->dphidx, 2) + pow(node->dphidy, 2));
             
             if (node->id != 20) {
-                double L2NormThrshld = 0.00005;
                 if (L2NormEGradPhi >= L2NormThrshld) {
                     interfaceNormalX = node->dphidx / L2NormEGradPhi;
                     interfaceNormalY = node->dphidy / L2NormEGradPhi;
