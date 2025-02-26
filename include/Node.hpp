@@ -93,6 +93,8 @@ public:
     std::vector<double> hEq;
     std::vector<double> sourceH;
 
+    std::vector<bool> neighborLookUp; // Neighbor look up table for boundary nodes
+
     Node(int posX, int posY);
 };
 

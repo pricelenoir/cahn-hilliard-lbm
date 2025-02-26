@@ -370,7 +370,7 @@ void eGrad(Node* node, Domain &domain, T1 Node::*value, T2 Node::*gradient) {
             if (node->id == 0) {
                 (*node.*gradient)[i] = 0.5*(domain.nodes[ixp][iyp]->*value - domain.nodes[ixn][iyn]->*value);
             } else if (node->id > 20) {
-                if (1) { // if domain_info[ix,iy][i+3] == 1:
+                if (node->neighborLookUp[i]) {
                     (*node.*gradient)[i] = 0.0;
                 } else {
                     (*node.*gradient)[i] = 0.5 * (domain.nodes[ixp][iyp]->*value - domain.nodes[ixn][iyn]->*value);
