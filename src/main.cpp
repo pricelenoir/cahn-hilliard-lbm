@@ -61,12 +61,12 @@ int main(int argc, char** argv) {
             eGrad(node, domain, &Node::uY, &Node::eDvdx);
 
             node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
+
+            // Initial equilibrium values
+            equilibriumG(node, domain);
+            equilibriumH(node, domain);
         }
     }
-
-    // Initial equilibrium distribution based on the macroscopic values
-    equilibriumG(domain);
-    equilibriumH(domain);
 
     cout << "Setup complete. Starting simulation..." << endl;
 
@@ -78,9 +78,9 @@ int main(int argc, char** argv) {
             macroscopic(domain, constants);
 
             // Update boundary conditions
-            macroscopicInflowBC(domain);
-            macroscopicOutflowBC(domain);
-            macroscopicWallBC(domain);
+            macroscopicInflowBC(domain, constants);
+            macroscopicOutflowBC(domain, constants);
+            macroscopicWallBC(domain, constants);
 
             for (long i = 0; i < nX; i++) {
                 for (long j = 0; j < nY; j++) {
@@ -98,23 +98,21 @@ int main(int argc, char** argv) {
                     eGrad(node, domain, &Node::uY, &Node::eDvdx);
 
                     node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
+
+                    // Update equilibrium values and sources
+                    equilibriumG(node, domain);
+                    sourceG(node, domain, constants);
+                    equilibriumH(node, domain);
+                    sourceH(node, domain, constants);
+
+                    // Zou He boundary condition
+                    zouHeBC(node, domain);
+
+                    // Collide and stream steps
+                    collide(node, domain);
+                    stream(node, domain);
                 }
             }
-
-            // Update equilibrium values and sources
-            equilibriumG(domain);
-            sourceG(domain, constants);
-            equilibriumH(domain);
-            sourceH(domain, constants);
-            
-            // Zou He boundary condition
-            zouHeBC(domain);
-
-            // Collide and stream steps
-            collide(domain);
-            stream(domain);
-
-            domain.calcResiduals();
 
             if (iter % saveDomainIter == 0 && iter != 0) {
                 cout << "Iteration: " << iter << " / " << maxIter << ". Saving domain..." << endl;

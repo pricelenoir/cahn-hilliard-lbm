@@ -3,7 +3,7 @@
 
 #include "domain.hpp"
 
-void collide(Domain &domain);
-void stream(Domain &domain);
+void collide(Node* node, Domain &domain);
+void stream(Node* node, Domain &domain);
 
 #endif // COLLIDE_AND_STREAM_HPP

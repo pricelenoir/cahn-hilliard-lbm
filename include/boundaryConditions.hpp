@@ -3,10 +3,9 @@
 
 #include "domain.hpp"
 
-void neumannBC(Domain &domain);
-void macroscopicInflowBC(Domain &domain);
-void macroscopicOutflowBC(Domain &domain);
-void macroscopicWallBC(Domain &domain);
-void zouHeBC(Domain &domain);
+void macroscopicInflowBC(Domain &domain, Constants &constants);
+void macroscopicOutflowBC(Domain &domain, Constants &constants);
+void macroscopicWallBC(Domain &domain, Constants &constants);
+void zouHeBC(Node* node, Domain &domain);
 
 #endif // BOUNDARY_CONDITIONS_HPP

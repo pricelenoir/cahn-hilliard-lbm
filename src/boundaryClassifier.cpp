@@ -122,8 +122,8 @@ vector<Node*> identifyNeighbors(Domain &domain, Node* node) {
 
 void identifyBoundaryNodes(Domain &domain) {
     Node* node;
-    for (int i=0; i < domain.nX; i++) {
-        for (int j=0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             if (node->id == 0) {
@@ -215,8 +215,8 @@ vector<pair<int, int>> kClosestNeighbors(Node* node, vector<pair<int, int>> edge
 
 void classifyBC(Domain &domain) {
     Node* node;
-    for (int i=0; i < domain.nX; i++) {
-        for (int j=0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             if (node->isBoundary) {
@@ -317,12 +317,18 @@ void identifyInletNodes(Domain &domain) {
     for (long j = 1; j < domain.nY - 1; j++) {
         domain.nodes[0][j]->isInlet = true;
         domain.nodes[0][j]->id = 22;
+        domain.nodes[0][j]->normalNodeID = -1;
     }
+    domain.nodes[0][1]->normalNodeID = -5;
+    domain.nodes[0][domain.nY - 2]->normalNodeID = -7;
 }
 
 void identifyOutletNodes(Domain &domain) {
     for (long j = 1; j < domain.nY - 1; j++) {
         domain.nodes[domain.nX - 1][j]->isOutlet = true;
         domain.nodes[domain.nX - 1][j]->id = 28;
+        domain.nodes[domain.nX - 1][j]->normalNodeID = -2;
     }
+    domain.nodes[domain.nX - 1][1]->normalNodeID = -8;
+    domain.nodes[domain.nX - 1][domain.nY - 2]->normalNodeID = -6;
 }

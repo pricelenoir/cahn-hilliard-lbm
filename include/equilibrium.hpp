@@ -3,9 +3,9 @@
 
 #include "domain.hpp"
 
-void equilibriumG(Domain &domain);
-void equilibriumH(Domain &domain);
-void sourceG(Domain &domain, Constants &constants);
-void sourceH(Domain &domain, Constants &constants);
+void equilibriumG(Node* node, Domain &domain);
+void equilibriumH(Node* node, Domain &domain);
+void sourceG(Node* node, Domain &domain, Constants &constants);
+void sourceH(Node* node, Domain &domain, Constants &constants);
 
 #endif // EQUILIBRIUM_HPP
