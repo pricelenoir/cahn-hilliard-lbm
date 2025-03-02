@@ -1,7 +1,7 @@
 FILES = bin/cahn-hilliard
 CXX = g++
-CFLAGS = -w -std=c++17 -I./include -I./include/nlohmann -g # -fsanitize=address 
-LDFLAGS = # -fsanitize=address
+CFLAGS = -w -std=c++17 -I./include -I./include/nlohmann -g -O3 -march=native
+LDFLAGS =
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:src/%.cpp=obj/%.o)
