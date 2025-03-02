@@ -87,6 +87,7 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
 }
 
 void macroscopicOutflowBC(Domain &domain, Constants &constants) {
+    /*
     // Definition of constants
     double phi1 = constants.phi1;
     double phi2 = constants.phi2;
@@ -152,6 +153,87 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
             node->rho = (rho1 * (node->phi - phi2) + rho2 * (phi1 - node->phi)) / (phi1 - phi2);
         }
     }
+    */
+   // This is the redefined macroscopicInflowBC with different parameter values:
+   // Definition of constants
+   double rho1 = constants.rho1;
+   double rho2 = constants.rho2;
+   double phi1 = constants.phi1;
+   double phi2 = constants.phi2;
+   double deltaM = constants.deltaM;
+   double deltaX = constants.deltaX;
+   double deltaT = constants.deltaT;
+
+   long xp, xpp, yp, ypp;
+   Node* node;
+   for (long i = 0; i < domain.nX; i++) {
+       for (long j = 0; j < domain.nY; j++) {
+           node = domain.nodes[i][j];
+
+           node->oldUX = node->uX;
+           node->oldUY = node->uY;
+
+           if (node->isOutlet) {
+               if (node->normalNodeID == -1) {
+                   xp = i + 1;
+                   xpp = i + 2;
+                   yp = j;
+                   ypp = j;
+               } else if (node->normalNodeID == -2) {
+                   xp = i - 1;
+                   xpp = i - 2;
+                   yp = j;
+                   ypp = j;
+               } else if (node->normalNodeID == -3) {
+                   xp = i;
+                   xpp = i;
+                   yp = j + 1;
+                   ypp = j + 2;
+               } else if (node->normalNodeID == -4) {
+                   xp = i;
+                   xpp = i;
+                   yp = j - 1;
+                   ypp = j - 2;
+               } else if (node->normalNodeID == -5) {
+                   xp = i + 1;
+                   xpp = i + 2;
+                   yp = j + 1;
+                   ypp = j + 2;
+               } else if (node->normalNodeID == -6) {
+                   xp = i - 1;
+                   xpp = i - 2;
+                   yp = j - 1;
+                   ypp = j - 2;
+               } else if (node->normalNodeID == -7) {
+                   xp = i + 1;
+                   xpp = i + 2;
+                   yp = j - 1;
+                   ypp = j - 2;
+               } else if (node->normalNodeID == -8) {
+                   xp = i - 1;
+                   xpp = i - 2;
+                   yp = j + 1;
+                   ypp = j + 2;
+               }
+
+               // Neumann boundary condition
+               node->uX = (-2 * 0.0 - domain.nodes[xpp][ypp]->uX + 4.0 * domain.nodes[xp][yp]->uX) / 3.0;
+               node->uY = (-2 * 0.0 - domain.nodes[xpp][ypp]->uY + 4.0 * domain.nodes[xp][yp]->uY) / 3.0;
+
+               node->phi = phi2;
+               if (node->phi <= min(phi1, phi2)) {
+                   node->phi = min(phi1, phi2);
+               } else if (node->phi >= max(phi1, phi2)) {
+                   node->phi = max(phi1, phi2);
+               }
+
+               node->mu = 0.0;
+               node->p = 0.0;
+           }
+
+           node->rho = (rho1 * (node->phi - phi2) + rho2 * (phi1 - node->phi)) / (phi1 - phi2);
+       }
+   }
 }
 
 void macroscopicWallBC(Domain &domain, Constants &constants) {
