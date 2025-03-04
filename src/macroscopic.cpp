@@ -58,8 +58,15 @@ void macroscopic(Domain &domain, Constants &constants) {
 
             // Calculate density from composition
             node->rho = (rho1 * (node->phi - phi2) + rho2 * (phi1 - node->phi)) / (phi1 - phi2);
+        }
+    }
 
-            // Calculate mu value
+    // Need to iterate through entire domain before using laplace() (depends on neighboring values)
+    for (long i = 0; i < domain.nX; i++) {
+        for (long j = 0; j < domain.nY; j++) {
+            node = domain.nodes[i][j];
+
+            // Calculate mu
             node->mu0 = 4 * beta * (node->phi - phi2) * (node->phi - phi1) * (node->phi - 0.5 * (phi2 + phi1));
             laplace(node, domain, &Node::phi, &Node::d2phidx2);
             node->mu = node->mu0 - k * node->d2phidx2;

@@ -24,42 +24,42 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
             node->oldUY = node->uY;
 
             if (node->isInlet) {
-                if (node->normalNodeID == -1) {
+                if (node->inletNormalNodeID == -1) {
                     xp = i + 1;
                     xpp = i + 2;
                     yp = j;
                     ypp = j;
-                } else if (node->normalNodeID == -2) {
+                } else if (node->inletNormalNodeID== -2) {
                     xp = i - 1;
                     xpp = i - 2;
                     yp = j;
                     ypp = j;
-                } else if (node->normalNodeID == -3) {
+                } else if (node->inletNormalNodeID == -3) {
                     xp = i;
                     xpp = i;
                     yp = j + 1;
                     ypp = j + 2;
-                } else if (node->normalNodeID == -4) {
+                } else if (node->inletNormalNodeID== -4) {
                     xp = i;
                     xpp = i;
                     yp = j - 1;
                     ypp = j - 2;
-                } else if (node->normalNodeID == -5) {
+                } else if (node->inletNormalNodeID == -5) {
                     xp = i + 1;
                     xpp = i + 2;
                     yp = j + 1;
                     ypp = j + 2;
-                } else if (node->normalNodeID == -6) {
+                } else if (node->inletNormalNodeID == -6) {
                     xp = i - 1;
                     xpp = i - 2;
                     yp = j - 1;
                     ypp = j - 2;
-                } else if (node->normalNodeID == -7) {
+                } else if (node->inletNormalNodeID== -7) {
                     xp = i + 1;
                     xpp = i + 2;
                     yp = j - 1;
                     ypp = j - 2;
-                } else if (node->normalNodeID == -8) {
+                } else if (node->inletNormalNodeID == -8) {
                     xp = i - 1;
                     xpp = i - 2;
                     yp = j + 1;
@@ -174,42 +174,42 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
            node->oldUY = node->uY;
 
            if (node->isOutlet) {
-               if (node->normalNodeID == -1) {
+               if (node->outletNormalNodeID == -1) {
                    xp = i + 1;
                    xpp = i + 2;
                    yp = j;
                    ypp = j;
-               } else if (node->normalNodeID == -2) {
+               } else if (node->outletNormalNodeID= -2) {
                    xp = i - 1;
                    xpp = i - 2;
                    yp = j;
                    ypp = j;
-               } else if (node->normalNodeID == -3) {
+               } else if (node->outletNormalNodeID == -3) {
                    xp = i;
                    xpp = i;
                    yp = j + 1;
                    ypp = j + 2;
-               } else if (node->normalNodeID == -4) {
+               } else if (node->outletNormalNodeID == -4) {
                    xp = i;
                    xpp = i;
                    yp = j - 1;
                    ypp = j - 2;
-               } else if (node->normalNodeID == -5) {
+               } else if (node->outletNormalNodeID == -5) {
                    xp = i + 1;
                    xpp = i + 2;
                    yp = j + 1;
                    ypp = j + 2;
-               } else if (node->normalNodeID == -6) {
+               } else if (node->outletNormalNodeID= -6) {
                    xp = i - 1;
                    xpp = i - 2;
                    yp = j - 1;
                    ypp = j - 2;
-               } else if (node->normalNodeID == -7) {
+               } else if (node->outletNormalNodeID == -7) {
                    xp = i + 1;
                    xpp = i + 2;
                    yp = j - 1;
                    ypp = j - 2;
-               } else if (node->normalNodeID == -8) {
+               } else if (node->outletNormalNodeID == -8) {
                    xp = i - 1;
                    xpp = i - 2;
                    yp = j + 1;
@@ -414,23 +414,29 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
 void zouHeBC(Node* node, Domain &domain) {
     array<int, 3> bounceBackIndices;
     array<int, 2> concaveIndices;
+    int normalNodeID;
 
     if (node->isBoundary || node->isInlet || node->isOutlet) {
-        if (node->normalNodeID == -1) {
+
+        if (node->isBoundary) normalNodeID = node->normalNodeID;
+        if (node->isInlet) normalNodeID = node->inletNormalNodeID;
+        if (node->isOutlet) normalNodeID = node->outletNormalNodeID;
+
+        if (normalNodeID == -1) {
             bounceBackIndices = {6, 7, 8};
-        } else if (node->normalNodeID == -2) {
+        } else if (normalNodeID == -2) {
             bounceBackIndices = {0, 1, 2};
-        } else if (node->normalNodeID == -3) {
+        } else if (normalNodeID == -3) {
             bounceBackIndices = {2, 5, 8};
-        } else if (node->normalNodeID == -4) {
+        } else if (normalNodeID == -4) {
             bounceBackIndices = {0, 3, 6};
-        } else if (node->normalNodeID == -5) {
+        } else if (normalNodeID == -5) {
             bounceBackIndices = {5, 7, 8};
-        } else if (node->normalNodeID == -6) {
+        } else if (normalNodeID == -6) {
             bounceBackIndices = {0, 1, 3};
-        } else if (node->normalNodeID == -7) {
+        } else if (normalNodeID == -7) {
             bounceBackIndices = {3, 6, 7};
-        } else if (node->normalNodeID == -8) {
+        } else if (normalNodeID == -8) {
             bounceBackIndices = {1, 2, 5};
         }
 

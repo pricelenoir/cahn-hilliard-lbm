@@ -10,5 +10,6 @@ std::vector<std::pair<int, int>> kClosestNeighbors(Node* node, std::vector<std::
 void classifyBC(Domain &domain);
 void identifyInletNodes(Domain &domain);
 void identifyOutletNodes(Domain &domain);
+void boundaryClassification(Domain &domain);
 
 #endif // BOUNDARY_CLASSIFIER_HPP

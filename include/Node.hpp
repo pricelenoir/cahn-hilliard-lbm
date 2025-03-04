@@ -8,8 +8,6 @@ public:
     long x;
     long y;
 
-    int id;
-    int normalNodeID;
     /* 
     Node ID Key:
     ┌────---┬───────────────────────────┬───────────┐
@@ -31,7 +29,11 @@ public:
     └────---┴───────────────────────────┴───────────┘
     */
 
-    // Node classification flags
+    // Node classification
+    int id;
+    int normalNodeID;
+    int inletNormalNodeID;
+    int outletNormalNodeID;
     bool isBoundary; // Boundary node (wall or internal solid)
     bool isConcave;  // Concave solid node
     bool isInlet;    // Inlet boundary condition
@@ -54,10 +56,6 @@ public:
     double tmp;      // Temporary variable to store intermediate values
 
     // Residual values
-    double resUX;
-    double resUY;
-    double resPhi;
-    double resP;
     double oldUX;
     double oldUY;
     double oldPhi;

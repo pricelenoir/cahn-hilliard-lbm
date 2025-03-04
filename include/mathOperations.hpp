@@ -218,13 +218,13 @@ void laplace(Node* node, Domain &domain, T Node::*value, T Node::*solution) {
                 long iyp = iy + e[i][1];
 
                 // Apply boundary checks
-                if (ixp >= nx) {
+                if (ixp > nx-1) {
                     ixp = ix - e[i][0];
                 } else if (ixp < 0) {
                     ixp = ix - e[i][0];
                 }
 
-                if (iyp >= ny) {
+                if (iyp > ny-1) {
                     iyp = iy - e[i][1];
                 } else if (iyp < 0) {
                     iyp = iy - e[i][1];

@@ -8,6 +8,8 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	isInlet = false;
 	isOutlet = false;
 	normalNodeID = 0;
+	inletNormalNodeID = 0;
+	outletNormalNodeID = 0;
 	
 	uX = 0;
 	uY = 0;
@@ -25,10 +27,6 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	forceY = 0;
 	tmp = 0;
 
-	resUX = 1;
-	resUY = 1;
-	resPhi = 1;
-	resP = 1;
 	oldUX = 0;
 	oldUY = 0;
 	oldPhi = 1;

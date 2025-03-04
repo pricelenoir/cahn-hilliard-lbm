@@ -35,12 +35,15 @@ public:
     long nY;             // Number of nodes in Y direction
     int periodicity[2];  // Periodicity in X and Y directions
 
+    double resU;         // Residual velocity
+    double resPhi;       // Residual order parameter
+    double resP;         // Residual pressure
+
     std::vector<std::vector <Node *>> nodes;
 
     Domain(long nX, long nY);
     void initialize(const nlohmann::json& config, Constants &constants);
     void save(const nlohmann::json& config, int iter);
-    void calcResiduals();
 };
 
 #endif // DOMAIN_HPP

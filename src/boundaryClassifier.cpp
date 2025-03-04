@@ -251,6 +251,84 @@ void classifyBC(Domain &domain) {
                     normal = -(dx/dy);
                 }
 
+                if (normal == 0) {
+                    if (domain.nodes[i+1][j]->id == 0 || domain.nodes[i+1][j]->isBoundary) {
+                        node->normalNodeID = -1;
+                    } else {
+                        node->normalNodeID = -2;
+                    }
+
+                } else if (isinf(normal)) {
+                    if (domain.nodes[i][j+1]->id == 0 || domain.nodes[i][j+1]->isBoundary) {
+                        if (domain.nodes[i][j+1]->id == 0) {
+                            node->normalNodeID = -3;
+                        } else if (domain.nodes[i][j-1]->id != 1) {
+                            node->normalNodeID = -4;
+                        } else {
+                            node->normalNodeID = -3;
+                        }
+                    } else {
+                        node->normalNodeID = -4;
+                    }
+
+                } else if (normal == 1) {
+                    if (domain.nodes[i+1][j+1]->id == 0 || domain.nodes[i+1][j+1]->isBoundary) {
+                        node->normalNodeID = -5;
+                        node->id = 21;
+                    } else {
+                        node->normalNodeID = -6;
+                    }
+                
+                } else if (normal == -1) {
+                    if (domain.nodes[i+1][j-1]->id == 0 || domain.nodes[i+1][j-1]->isBoundary) {
+                        node->normalNodeID = -7;
+                    } else {
+                        node->normalNodeID = -8;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void identifyInletNodes(Domain &domain) {
+    for (long j = 1; j < domain.nY - 1; j++) {
+        domain.nodes[0][j]->isInlet = true;
+        domain.nodes[0][j]->id = 22;
+        domain.nodes[0][j]->inletNormalNodeID = -1;
+        domain.nodes[0][j]->neighborLookUp = vector<bool>{0,0,0,0,0,0,1,1,1};
+    }
+    domain.nodes[0][1]->inletNormalNodeID = -5;
+    domain.nodes[0][1]->neighborLookUp = vector<bool>{0,0,1,0,0,1,1,1,1};
+
+    domain.nodes[0][domain.nY - 2]->inletNormalNodeID = -7;
+    domain.nodes[0][domain.nY - 2]->neighborLookUp = vector<bool>{1,0,0,1,0,0,1,1,1};
+}
+
+void identifyOutletNodes(Domain &domain) {
+    for (long j = 1; j < domain.nY - 1; j++) {
+        domain.nodes[domain.nX - 1][j]->isOutlet = true;
+        domain.nodes[domain.nX - 1][j]->id = 28;
+        domain.nodes[domain.nX - 1][j]->outletNormalNodeID = -2;
+        domain.nodes[domain.nX - 1][j]->neighborLookUp = vector<bool>{1,1,1,0,0,0,0,0,0};
+    }
+    domain.nodes[domain.nX - 1][1]->outletNormalNodeID = -8;
+    domain.nodes[domain.nX - 1][1]->neighborLookUp = vector<bool>{1,1,1,0,0,1,0,0,1};
+
+    domain.nodes[domain.nX - 1][domain.nY - 2]->outletNormalNodeID = -6;
+    domain.nodes[domain.nX - 1][domain.nY - 2]->neighborLookUp = vector<bool>{1,1,1,1,0,0,1,0,0};
+}
+
+void boundaryClassification(Domain &domain) {
+    identifyBoundaryNodes(domain);
+    classifyBC(domain);
+    identifyInletNodes(domain);
+    identifyOutletNodes(domain);
+
+    for (long i = 0; i < domain.nX; i++) {
+        for (long j = 0; j < domain.nY; j++) {
+            Node* node = domain.nodes[i][j];
+
                 /* 
                 Node ID Key:
                 ┌────---┬───────────────────────────┬───────────┐
@@ -271,79 +349,17 @@ void classifyBC(Domain &domain) {
                 │ 29    │ SW                        │ -6        │
                 └────---┴───────────────────────────┴───────────┘
                 */
-                if (normal == 0) {
-                    if (domain.nodes[i+1][j]->id == 0 || domain.nodes[i+1][j]->isBoundary) {
-                        node->normalNodeID = -1;
-                        node->id = 22;
-                    } else {
-                        node->normalNodeID = -2;
-                        node->id = 28;
-                    }
 
-                } else if (isinf(normal)) {
-                    if (domain.nodes[i][j+1]->id == 0 || domain.nodes[i][j+1]->isBoundary) {
-                        if (domain.nodes[i][j+1]->id == 0) {
-                            node->normalNodeID = -3;
-                            node->id = 24;
-                        } else if (domain.nodes[i][j-1]->id != 1) {
-                            node->normalNodeID = -4;
-                            node->id = 26;
-                        } else {
-                            node->normalNodeID = -3;
-                            node->id = 24;
-                        }
-                    } else {
-                        node->normalNodeID = -4;
-                        node->id = 26;
-                    }
-
-                } else if (normal == 1) {
-                    if (domain.nodes[i+1][j+1]->id == 0 || domain.nodes[i+1][j+1]->isBoundary) {
-                        node->normalNodeID = -5;
-                        node->id = 21;
-                    } else {
-                        node->normalNodeID = -6;
-                        node->id = 29;
-                    }
-                
-                } else if (normal == -1) {
-                    if (domain.nodes[i+1][j-1]->id == 0 || domain.nodes[i+1][j-1]->isBoundary) {
-                        node->normalNodeID = -7;
-                        node->id = 23;
-                    } else {
-                        node->normalNodeID = -8;
-                        node->id = 27;
-                    }
-                }
+            if (node->isBoundary) {
+                if (node->normalNodeID == -1) node->id = 22;
+                if (node->normalNodeID == -2) node->id = 28;
+                if (node->normalNodeID == -3) node->id = 24;
+                if (node->normalNodeID == -4) node->id = 26;
+                if (node->normalNodeID == -5) node->id = 21;
+                if (node->normalNodeID == -6) node->id = 29;
+                if (node->normalNodeID == -7) node->id = 23;
+                if (node->normalNodeID == -8) node->id = 27;
             }
         }
     }
-}
-
-void identifyInletNodes(Domain &domain) {
-    for (long j = 1; j < domain.nY - 1; j++) {
-        domain.nodes[0][j]->isInlet = true;
-        domain.nodes[0][j]->id = 22;
-        domain.nodes[0][j]->normalNodeID = -1;
-        domain.nodes[0][j]->neighborLookUp = vector<bool>{0,0,0,0,0,0,1,1,1};
-    }
-    domain.nodes[0][1]->normalNodeID = -5;
-    domain.nodes[0][1]->neighborLookUp = vector<bool>{0,0,1,0,0,1,1,1,1};
-
-    domain.nodes[0][domain.nY - 2]->normalNodeID = -7;
-    domain.nodes[0][domain.nY - 2]->neighborLookUp = vector<bool>{1,0,0,1,0,0,1,1,1};
-}
-
-void identifyOutletNodes(Domain &domain) {
-    for (long j = 1; j < domain.nY - 1; j++) {
-        domain.nodes[domain.nX - 1][j]->isOutlet = true;
-        domain.nodes[domain.nX - 1][j]->id = 28;
-        domain.nodes[domain.nX - 1][j]->normalNodeID = -2;
-        domain.nodes[domain.nX - 1][j]->neighborLookUp = vector<bool>{1,1,1,0,0,0,0,0,0};
-    }
-    domain.nodes[domain.nX - 1][1]->normalNodeID = -8;
-    domain.nodes[domain.nX - 1][1]->neighborLookUp = vector<bool>{1,1,1,0,0,1,0,0,1};
-
-    domain.nodes[domain.nX - 1][domain.nY - 2]->normalNodeID = -6;
-    domain.nodes[domain.nX - 1][domain.nY - 2]->neighborLookUp = vector<bool>{1,1,1,1,0,0,1,0,0};
 }

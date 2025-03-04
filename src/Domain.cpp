@@ -22,6 +22,9 @@ Domain::Domain(long nx, long ny) : nX(nx), nY(ny) {
             nodes[i][j] = new Node(i, j);
         }
     }
+    resU = 1;
+    resP = 1;
+    resPhi = 1;
 }
 
 // Lambda function to read in CSV input files
@@ -186,8 +189,4 @@ void Domain::save(const nlohmann::json& config, int iter) {
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->uY;
     });
-}
-
-void Domain::calcResiduals() {
-    return;
 }
