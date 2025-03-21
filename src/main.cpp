@@ -51,12 +51,11 @@ int main(int argc, char** argv) {
         }
     }
 
+    // Initial gradient and equilibrium calculations
     for (long i = 0; i < nX; i++) {
         for (long j = 0; j < nY; j++) {
             node = domain.nodes[i][j];
 
-            // Gradient calculations
-            laplace(node, domain, &Node::oldMu, &Node::d2mu);
             derivativeY(node, domain, &Node::uX, &Node::dudy);
             derivativeX(node, domain, &Node::uY, &Node::dvdx);
             derivativeX(node, domain, &Node::uX, &Node::dudx);
@@ -66,9 +65,8 @@ int main(int argc, char** argv) {
 
             node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
 
-            // Initial equilibrium values
-            equilibriumG(node, domain);
-            equilibriumH(node, domain);
+            equilibriumG(node, domain, &Node::gIn);
+            equilibriumH(node, domain, &Node::hIn);
         }
     }
     // Add some print stuff here about the domain and sim
@@ -78,7 +76,7 @@ int main(int argc, char** argv) {
     int saveDomainIter = config["simulation"]["save_domain_iter"];
     double resU, resPhi, resP;
     try {
-        for (int iter = 0; iter < maxIter; iter++) {
+        for (int iter = 1; iter <= maxIter; iter++) {
             // Update macroscopic values
             macroscopic(domain, constants);
 
@@ -99,7 +97,6 @@ int main(int argc, char** argv) {
                     node = domain.nodes[i][j];
 
                     // Gradient calculations
-                    laplace(node, domain, &Node::oldMu, &Node::d2mu);
                     derivativeY(node, domain, &Node::uX, &Node::dudy);
                     derivativeX(node, domain, &Node::uY, &Node::dvdx);
                     derivativeX(node, domain, &Node::uX, &Node::dudx);
@@ -110,9 +107,9 @@ int main(int argc, char** argv) {
                     node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
 
                     // Update equilibrium values and sources
-                    equilibriumG(node, domain);
+                    equilibriumG(node, domain, &Node::gEq);
                     sourceG(node, domain, constants);
-                    equilibriumH(node, domain);
+                    equilibriumH(node, domain, &Node::hEq);
                     sourceH(node, domain, constants);
 
                     // Zou He boundary condition
@@ -122,7 +119,7 @@ int main(int argc, char** argv) {
                     collide(node, domain);
                     stream(node, domain);
 
-                    // Calculate residuals
+                    // Calculate residuals and update old values
                     if (node->id == 0) {
                         resU   = sqrt(pow(abs(node->oldUX - node->uX), 2) + pow(abs(node->oldUY - node->uY), 2)) / (deltaT / deltaX);
                         resPhi = abs(node->oldPhi - node->phi);
@@ -140,7 +137,14 @@ int main(int argc, char** argv) {
                 }
             }
 
-            if (iter % saveDomainIter == 0 && iter != 0) {
+            // Store residual at each timestep
+            if (saveDomainIter != 0) {
+                domain.resUVec.push_back(domain.resU);
+                domain.resPhiVec.push_back(domain.resPhi);
+                domain.resPVec.push_back(domain.resP);
+            }
+
+            if (iter % saveDomainIter == 0 && iter != 1) {
                 cout << "Iteration: " << iter << " / " << maxIter << ". Saving domain..." << endl;
                 domain.save(config, iter);
             }
@@ -151,7 +155,7 @@ int main(int argc, char** argv) {
                 domain.save(config, iter);
                 return 0;
             } else if (iter > 1000 && isinf(domain.resU)) {
-                cout << "Simulation failed. Solution diverged." << endl;
+                cout << "Simulation failed. Solution diverged at iteration " << iter << "." << endl;
                 return 1;
             }
         }

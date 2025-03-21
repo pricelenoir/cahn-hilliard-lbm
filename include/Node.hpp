@@ -64,7 +64,6 @@ public:
     double mu0;
 
     // Gradient values
-    double d2mu;
     double dudx;
     double dudy;
     double dvdx;

@@ -155,6 +155,8 @@ void Domain::save(const nlohmann::json& config, int iter) {
         fs::create_directory(outputDir);
     }
 
+    string residualsFile = outputDir + "/residuals.txt";
+
     // Create iteration output directory
     outputDir = outputDir + "/iter" + to_string(iter) + "/";
     if (!fs::exists(outputDir)) {
@@ -189,4 +191,27 @@ void Domain::save(const nlohmann::json& config, int iter) {
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->uY;
     });
+
+    // Write all stored residuals to a single text file
+    ofstream resFile(residualsFile, ios::app);
+    if (resFile.is_open()) {
+        size_t firstIteration = iter - resUVec.size() + 1;
+
+        for (size_t i = 0; i < resUVec.size(); i++) {
+            size_t iterationNumber = firstIteration + i;
+            resFile << "Iteration " << iterationNumber << ":\n";
+            resFile << "------------------\n";
+            resFile << fixed << setprecision(10);
+            resFile << "Residual U: " << resUVec[i] << "\n";
+            resFile << "Residual Phi: " << resPhiVec[i] << "\n";
+            resFile << "Residual P: " << resPVec[i] << "\n";
+            resFile << "\n";
+        }
+        // Clear the vectors after writing to the file
+        resUVec.clear();
+        resPhiVec.clear();
+        resPVec.clear();
+    } else {
+        cerr << "Error opening file: " << residualsFile << endl;
+    }
 }

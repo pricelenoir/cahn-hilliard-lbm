@@ -2,7 +2,9 @@
 #include "mathOperations.hpp"
 #include <cmath>
 
-void equilibriumG(Node* node, Domain &domain) {
+using namespace std;
+
+void equilibriumG(Node* node, Domain &domain, vector<double> Node::*g) {
     double fEq, gammaU;
     long duE = 0;
     long eU = 0;
@@ -18,14 +20,15 @@ void equilibriumG(Node* node, Domain &domain) {
 
             /* Equilibrium f calculation */
             fEq = node->rho * gammaU;
+            fEq = 1 * gammaU;
             
             /* Equilibrium g calculation */
-            node->gEq[k] = w[k] * node->pStar + (fEq - w[k]);
+            (node->*g)[k] = w[k] * node->pStar + (fEq - w[k]);
         }
     }
 }
 
-void equilibriumH(Node* node, Domain &domain) {
+void equilibriumH(Node* node, Domain &domain, vector<double> Node::*h) {
     if (node->id == 20) return; // Solid wall
 
     double fEq, gammaU;
@@ -40,9 +43,10 @@ void equilibriumH(Node* node, Domain &domain) {
 
         /* Equilibrium f calculation */
         fEq = node->rho * gammaU;
+        fEq = 1 * gammaU;
 
         /* Equilibrium h calculation */
-        node->hEq[k] = fEq * node->phi;
+        (node->*h)[k] = fEq * node->phi;
     }
 }
 

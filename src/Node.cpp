@@ -34,7 +34,6 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	oldMu = 0;
 	mu0 = 0;
 
-	d2mu = 0;
 	dudx = 0;
 	dudy = 0;
 	dvdx = 0;
