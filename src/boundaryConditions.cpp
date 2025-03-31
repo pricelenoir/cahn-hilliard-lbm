@@ -3,6 +3,7 @@
 #include "mathOperations.hpp"
 
 using namespace std;
+#include <iostream>
 
 void macroscopicInflowBC(Domain &domain, Constants &constants) {
     // Definition of constants
@@ -22,6 +23,12 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
 
             node->oldUX = node->uX;
             node->oldUY = node->uY;
+        }
+    }
+
+    for (long i = 0; i < domain.nX; i++) {
+        for (long j = 0; j < domain.nY; j++) {
+            node = domain.nodes[i][j];
 
             if (node->isInlet) {
                 if (node->inletNormalNodeID == -1) {
@@ -29,7 +36,7 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
                     xpp = i + 2;
                     yp = j;
                     ypp = j;
-                } else if (node->inletNormalNodeID== -2) {
+                } else if (node->inletNormalNodeID == -2) {
                     xp = i - 1;
                     xpp = i - 2;
                     yp = j;
@@ -39,7 +46,7 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
                     xpp = i;
                     yp = j + 1;
                     ypp = j + 2;
-                } else if (node->inletNormalNodeID== -4) {
+                } else if (node->inletNormalNodeID == -4) {
                     xp = i;
                     xpp = i;
                     yp = j - 1;
@@ -54,7 +61,7 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
                     xpp = i - 2;
                     yp = j - 1;
                     ypp = j - 2;
-                } else if (node->inletNormalNodeID== -7) {
+                } else if (node->inletNormalNodeID == -7) {
                     xp = i + 1;
                     xpp = i + 2;
                     yp = j - 1;
@@ -67,8 +74,8 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
                 }
 
                 // Neumann boundary condition
-                node->uX = (-2 * 0.0 - domain.nodes[xpp][ypp]->uX + 4.0 * domain.nodes[xp][yp]->uX) / 3.0;
-                node->uY = (-2 * 0.0 - domain.nodes[xpp][ypp]->uY + 4.0 * domain.nodes[xp][yp]->uY) / 3.0;
+                node->uX = (-2.0 * 0.0 - domain.nodes[xpp][ypp]->oldUX + 4.0 * domain.nodes[xp][yp]->oldUX) / 3.0;
+                node->uY = (-2.0 * 0.0 - domain.nodes[xpp][ypp]->oldUY + 4.0 * domain.nodes[xp][yp]->oldUY) / 3.0;
 
                 node->phi = phi1;
                 if (node->phi <= min(phi1, phi2)) {
@@ -87,15 +94,17 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
 }
 
 void macroscopicOutflowBC(Domain &domain, Constants &constants) {
-    /*
     // Definition of constants
-    double phi1 = constants.phi1;
-    double phi2 = constants.phi2;
     double rho1 = constants.rho1;
     double rho2 = constants.rho2;
-    double uLB = constants.uLB;
+    double phi1 = constants.phi1;
+    double phi2 = constants.phi2;
+    double deltaM = constants.deltaM;
+    double deltaX = constants.deltaX;
+    double deltaT = constants.deltaT;
 
-    long xp, yp;
+
+    long xp, xpp, yp, ypp;
     Node* node;
     for (long i = 0; i < domain.nX; i++) {
         for (long j = 0; j < domain.nY; j++) {
@@ -103,38 +112,61 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
 
             node->oldUX = node->uX;
             node->oldUY = node->uY;
+        }
+    }
+
+    for (long i = 0; i < domain.nX; i++) {
+        for (long j = 0; j < domain.nY; j++) {
+            node = domain.nodes[i][j];
 
             if (node->isOutlet) {
-                if (node->normalNodeID == -1) {
+                if (node->outletNormalNodeID == -1) {
                     xp = i + 1;
+                    xpp = i + 2;
                     yp = j;
-                } else if (node->normalNodeID == -2) {
+                    ypp = j;
+                } else if (node->outletNormalNodeID == -2) {
                     xp = i - 1;
+                    xpp = i - 2;
                     yp = j;
-                } else if (node->normalNodeID == -3) {
+                    ypp = j;
+                } else if (node->outletNormalNodeID == -3) {
                     xp = i;
+                    xpp = i;
                     yp = j + 1;
-                } else if (node->normalNodeID == -4) {
+                    ypp = j + 2;
+                } else if (node->outletNormalNodeID == -4) {
                     xp = i;
+                    xpp = i;
                     yp = j - 1;
-                } else if (node->normalNodeID == -5) {
+                    ypp = j - 2;
+                } else if (node->outletNormalNodeID == -5) {
                     xp = i + 1;
+                    xpp = i + 2;
                     yp = j + 1;
-                } else if (node->normalNodeID == -6) {
+                    ypp = j + 2;
+                } else if (node->outletNormalNodeID == -6) {
                     xp = i - 1;
+                    xpp = i - 2;
                     yp = j - 1;
-                } else if (node->normalNodeID == -7) {
+                    ypp = j - 2;
+                } else if (node->outletNormalNodeID == -7) {
                     xp = i + 1;
+                    xpp = i + 2;
                     yp = j - 1;
-                } else if (node->normalNodeID == -8) {
+                    ypp = j - 2;
+                } else if (node->outletNormalNodeID == -8) {
                     xp = i - 1;
+                    xpp = i - 2;
                     yp = j + 1;
+                    ypp = j + 2;
                 }
 
-                node->phi = domain.nodes[xp][yp]->phi;
-                node->uX = domain.nodes[xp][yp]->uX;
-                node->uY = domain.nodes[xp][yp]->uY;
+                // Neumann boundary condition
+                node->uX = (-2.0 * 0.0 - domain.nodes[xpp][ypp]->oldUX + 4.0 * domain.nodes[xp][yp]->oldUX) / 3.0;
+                node->uY = (-2.0 * 0.0 - domain.nodes[xpp][ypp]->oldUY + 4.0 * domain.nodes[xp][yp]->oldUY) / 3.0;
 
+                node->phi = phi2;
                 if (node->phi <= min(phi1, phi2)) {
                     node->phi = min(phi1, phi2);
                 } else if (node->phi >= max(phi1, phi2)) {
@@ -142,98 +174,12 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
                 }
 
                 node->mu = 0.0;
-
-                if (node->phi >= 0.5) {
-                    node->p = 0.0; // Boundary pressure
-                } else {
-                    if (node->uX <= uLB) node->uX = uLB;
-                    node->p = domain.nodes[xp][yp]->oldP;
-                }
+                node->p = 0.0;
             }
+
             node->rho = (rho1 * (node->phi - phi2) + rho2 * (phi1 - node->phi)) / (phi1 - phi2);
         }
     }
-    */
-   // This is the redefined macroscopicInflowBC with different parameter values:
-   // Definition of constants
-   double rho1 = constants.rho1;
-   double rho2 = constants.rho2;
-   double phi1 = constants.phi1;
-   double phi2 = constants.phi2;
-   double deltaM = constants.deltaM;
-   double deltaX = constants.deltaX;
-   double deltaT = constants.deltaT;
-
-   long xp, xpp, yp, ypp;
-   Node* node;
-   for (long i = 0; i < domain.nX; i++) {
-       for (long j = 0; j < domain.nY; j++) {
-           node = domain.nodes[i][j];
-
-           node->oldUX = node->uX;
-           node->oldUY = node->uY;
-
-           if (node->isOutlet) {
-               if (node->outletNormalNodeID == -1) {
-                   xp = i + 1;
-                   xpp = i + 2;
-                   yp = j;
-                   ypp = j;
-               } else if (node->outletNormalNodeID= -2) {
-                   xp = i - 1;
-                   xpp = i - 2;
-                   yp = j;
-                   ypp = j;
-               } else if (node->outletNormalNodeID == -3) {
-                   xp = i;
-                   xpp = i;
-                   yp = j + 1;
-                   ypp = j + 2;
-               } else if (node->outletNormalNodeID == -4) {
-                   xp = i;
-                   xpp = i;
-                   yp = j - 1;
-                   ypp = j - 2;
-               } else if (node->outletNormalNodeID == -5) {
-                   xp = i + 1;
-                   xpp = i + 2;
-                   yp = j + 1;
-                   ypp = j + 2;
-               } else if (node->outletNormalNodeID= -6) {
-                   xp = i - 1;
-                   xpp = i - 2;
-                   yp = j - 1;
-                   ypp = j - 2;
-               } else if (node->outletNormalNodeID == -7) {
-                   xp = i + 1;
-                   xpp = i + 2;
-                   yp = j - 1;
-                   ypp = j - 2;
-               } else if (node->outletNormalNodeID == -8) {
-                   xp = i - 1;
-                   xpp = i - 2;
-                   yp = j + 1;
-                   ypp = j + 2;
-               }
-
-               // Neumann boundary condition
-               node->uX = (-2 * 0.0 - domain.nodes[xpp][ypp]->uX + 4.0 * domain.nodes[xp][yp]->uX) / 3.0;
-               node->uY = (-2 * 0.0 - domain.nodes[xpp][ypp]->uY + 4.0 * domain.nodes[xp][yp]->uY) / 3.0;
-
-               node->phi = phi2;
-               if (node->phi <= min(phi1, phi2)) {
-                   node->phi = min(phi1, phi2);
-               } else if (node->phi >= max(phi1, phi2)) {
-                   node->phi = max(phi1, phi2);
-               }
-
-               node->mu = 0.0;
-               node->p = 0.0;
-           }
-
-           node->rho = (rho1 * (node->phi - phi2) + rho2 * (phi1 - node->phi)) / (phi1 - phi2);
-       }
-   }
 }
 
 void macroscopicWallBC(Domain &domain, Constants &constants) {
@@ -249,7 +195,9 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
     double contactAngle = constants.contactAngle;
     double gX = constants.gX;
     double gY = constants.gY;
+    double phiContactAngleThreshold = 0.5 * constants.W * constants.deltaX / constants.ly;
 
+    double cubicPhiFunction, gradPhiNew, gradPStarNew;
     long xp, xpp, xppp, yp, ypp, yppp;
     int dx, dy;
 
@@ -278,12 +226,19 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
 
             // Calculate intermediate value for force calculation below
             node->tmp = node->rho * node->nu * (node->dudx + node->dvdy + node->dvdx + node->dudy);
+        }
+    }
+
+    for (long i = 0; i < domain.nX; i++) {
+        for (long j = 0; j < domain.nY; j++) {
+            node = domain.nodes[i][j];
+
             derivativeX(node, domain, &Node::tmp, &Node::forceX);
             derivativeY(node, domain, &Node::tmp, &Node::forceY);
 
             // Calculate force (forceX and forceY currently hold intermediate gradient values)
-            node->forceX = gX * node->rho + node->forceX - (1/3) * node->pStar * (rho1 - rho2) * node->dphidx + node->mu * node->dphidx;
-            node->forceY = gY * node->rho + node->forceY - (1/3) * node->pStar * (rho1 - rho2) * node->dphidy + node->mu * node->dphidy;
+            node->forceX = gX * node->rho + node->forceX - (1.0/3.0) * node->pStar * (rho1 - rho2) * node->dphidx + node->mu * node->dphidx;
+            node->forceY = gY * node->rho + node->forceY - (1.0/3.0) * node->pStar * (rho1 - rho2) * node->dphidy + node->mu * node->dphidy;
 
             if (node->isBoundary) {
                 if (node->normalNodeID == -1) {
@@ -360,21 +315,19 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
                     dy = 1;
                 }
 
-                double phiContactAngleThreshold = 0.5 * constants.W * constants.deltaX / constants.ly;
+                cubicPhiFunction = -(phiContactAngleThreshold - domain.nodes[xp][yp]->oldPhi) * ((1.0 - phiContactAngleThreshold) - domain.nodes[xp][yp]->oldPhi) / ((1.0 - 2.0 * phiContactAngleThreshold) * (1.0 - 2.0 * phiContactAngleThreshold));
+                if (cubicPhiFunction < 0.0) cubicPhiFunction = 0.0;
 
-                double cubicPhiFunction = -(phiContactAngleThreshold - domain.nodes[xp][yp]->phi) * ((1 - phiContactAngleThreshold) - domain.nodes[xp][yp]->phi) / ((1 - 2 * phiContactAngleThreshold) * (1 - 2 * phiContactAngleThreshold));
+                // Neumann boundary condition
+                gradPhiNew = (-1.0) * sqrt(2.0 * beta / k) * cos(contactAngle) * cubicPhiFunction;
+                domain.nodes[xp][yp]->phi = (-2.0 * gradPhiNew - domain.nodes[xppp][yppp]->oldPhi + 4.0 * domain.nodes[xpp][ypp]->oldPhi) / 3.0;
+
+                cubicPhiFunction = -(phiContactAngleThreshold - node->oldPhi) * ((1.0 - phiContactAngleThreshold) - node->oldPhi) / ((1.0 - 2.0 * phiContactAngleThreshold) * (1.0 - 2.0 * phiContactAngleThreshold));
                 if (cubicPhiFunction <= 0) cubicPhiFunction = 0.0;
 
                 // Neumann boundary condition
-                double gradPhiNew = (-1.0) * sqrt(2 * beta / k) * cos(contactAngle) * cubicPhiFunction;
-                domain.nodes[xp][yp]->phi = (-2 * gradPhiNew - domain.nodes[xppp][yppp]->phi + 4.0 * domain.nodes[xpp][ypp]->phi) / 3.0;
-
-                cubicPhiFunction = -(phiContactAngleThreshold - domain.nodes[i][j]->phi) * ((1 - phiContactAngleThreshold) - domain.nodes[i][j]->phi) / ((1 - 2 * phiContactAngleThreshold) * (1 - 2 * phiContactAngleThreshold));
-                if (cubicPhiFunction <= 0) cubicPhiFunction = 0.0;
-
-                // Neumann boundary condition
-                gradPhiNew = (-1.0) * sqrt(2 * beta / k) * cos(contactAngle) * cubicPhiFunction;
-                node->phi = (-2 * gradPhiNew - domain.nodes[xpp][ypp]->phi + 4.0 * domain.nodes[xp][yp]->phi) / 3.0;
+                gradPhiNew = (-1.0) * sqrt(2.0 * beta / k) * cos(contactAngle) * cubicPhiFunction;
+                node->phi = (-2.0 * gradPhiNew - domain.nodes[xpp][ypp]->oldPhi + 4.0 * domain.nodes[xp][yp]->oldPhi) / 3.0;
 
                 if (node->phi <= min(phi1, phi2)) {
                     node->phi = min(phi1, phi2);
@@ -400,7 +353,7 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
                 domain.nodes[xp][yp]->uY = 0.0;
 
                 // Neumann boundary condition
-                double gradPStarNew = sqrt(pow(domain.nodes[xp][yp]->forceX * dx, 2) + pow(domain.nodes[xp][yp]->forceY * dy, 2));
+                gradPStarNew = sqrt(pow(domain.nodes[xp][yp]->forceX * dx, 2) + pow(domain.nodes[xp][yp]->forceY * dy, 2));
                 domain.nodes[xp][yp]->p = ((-2 * gradPStarNew - domain.nodes[xppp][yppp]->pStar + 4.0 * domain.nodes[xpp][ypp]->pStar) / 3.0) * (domain.nodes[xp][yp]->rho / 3.0);
 
                 // Neumann boundary condition
@@ -412,15 +365,14 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
 }
 
 void zouHeBC(Node* node, Domain &domain) {
-    array<int, 3> bounceBackIndices;
-    array<int, 2> concaveIndices;
-    int normalNodeID;
-
     if (node->isBoundary || node->isInlet || node->isOutlet) {
+        array<int, 3> bounceBackIndices;
+        array<int, 2> concaveIndices;
+        int normalNodeID;
 
         if (node->isBoundary) normalNodeID = node->normalNodeID;
-        if (node->isInlet) normalNodeID = node->inletNormalNodeID;
-        if (node->isOutlet) normalNodeID = node->outletNormalNodeID;
+        if (node->isInlet)    normalNodeID = node->inletNormalNodeID;
+        if (node->isOutlet)   normalNodeID = node->outletNormalNodeID;
 
         if (normalNodeID == -1) {
             bounceBackIndices = {6, 7, 8};
@@ -463,5 +415,5 @@ void zouHeBC(Node* node, Domain &domain) {
                 node->hIn[idx] = node->hEq[idx] + node->hIn[8 - idx] - node->hEq[8 - idx];
             }
         }
-    }
+    } else return;
 }
