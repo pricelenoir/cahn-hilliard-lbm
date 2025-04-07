@@ -20,7 +20,6 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	p = 0;
 	pStar = 0;
 	pThermo = 0;
-	mbl = 0;
 	nu = 0;
 	mu = 0;
 	forceX = 0;

@@ -72,7 +72,7 @@ Constants::Constants(const nlohmann::json& config) {
     Pe = (uP != 0) ? (1.1 / beta) : (1.1 / beta);
 
     eta = 2;
-    mlb = (eta * tau) / 3;
+    mbl = (eta * tau) / 3;
     contactAngle = M_PI - (M_PI / 3.0 + M_PI / 2.0);
 }
 

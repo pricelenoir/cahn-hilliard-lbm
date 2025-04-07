@@ -56,7 +56,7 @@ struct Constants {
     double We;             // Weber number
     double Pe;             // Pecelet number definition
     double eta;            // Free parameter for mobility
-    double mlb;            // Mobility in lattice unints
+    double mbl;            // Mobility in lattice unints
     double contactAngle;
 
     Constants(const nlohmann::json& config);

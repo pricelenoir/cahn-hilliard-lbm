@@ -48,7 +48,6 @@ public:
     double p;        // Pressure
     double pStar;    // Corrected pressure value from paper
     double pThermo;  // Thermodynamic pressure
-    double mbl;      // Mobility
     double nu;       // Kinematic viscosity
     double mu;       // Dynamic viscosity
     double forceX;   // Summation of forces term: gravity, surface, pressure, and viscous forces

@@ -106,11 +106,21 @@ int main(int argc, char** argv) {
 
                     node->uSqr = pow(node->uX, 2) + pow(node->uY, 2);
 
-                    // Update equilibrium values and sources
+                    // Update equilibrium values
                     equilibriumG(node, domain, &Node::gEq);
-                    sourceG(node, domain, constants);
                     equilibriumH(node, domain, &Node::hEq);
-                    sourceH(node, domain, constants);
+                    
+                    node->pStar = node->p / (node->rho / 3.0);
+                }
+            }
+            
+            // Update source terms
+            sourceG(domain, constants);
+            sourceH(domain, constants);
+
+            for (long i = 0; i < nX; i++) {
+                for (long j = 0; j < nY; j++) {
+                    node = domain.nodes[i][j];
 
                     // Zou He boundary condition
                     zouHeBC(node, domain);
