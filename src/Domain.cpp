@@ -22,9 +22,6 @@ Domain::Domain(long nx, long ny) : nX(nx), nY(ny) {
             nodes[i][j] = new Node(i, j);
         }
     }
-    resU = 1;
-    resP = 1;
-    resPhi = 1;
 }
 
 // Lambda function to read in CSV input files
@@ -87,12 +84,7 @@ void Domain::initialize(const nlohmann::json& config, Constants &constants) {
     periodicity[0] = config["domain"]["periodicity"]["x"] ? 1 : 0;
     periodicity[1] = config["domain"]["periodicity"]["y"] ? 1 : 0;
 
-    if (!fs::exists("domain/")) {
-        cout << "Domain directory not found." << endl;
-    }
-
     string domainDir = config["domain"]["domain_dir"];
-    domainDir = "domain/" + domainDir;
 
     // Read in domain file
     string inputFile = domainDir + "/domain.txt";
@@ -145,55 +137,58 @@ void Domain::initialize(const nlohmann::json& config, Constants &constants) {
 
 void Domain::save(const nlohmann::json& config, int iter) {
     // Create output directory
-    if (!fs::exists("output/")) {
-        fs::create_directory("output/");
-    }
-
     string outputDir = config["simulation"]["output_dir"];
-    outputDir = "output/" + outputDir;
     if (!fs::exists(outputDir)) {
-        fs::create_directory(outputDir);
+        fs::create_directories(outputDir);
     }
 
     string residualsFile = outputDir + "/residuals.txt";
 
     // Create iteration output directory
-    outputDir = outputDir + "/iter" + to_string(iter) + "/";
-    if (!fs::exists(outputDir)) {
-        fs::create_directory(outputDir);
+    string iterDir = outputDir + "/iter" + to_string(iter) + "/";
+    if (!fs::exists(iterDir)) {
+        fs::create_directory(iterDir);
     }
 
-    string outputFile = outputDir + "domain.txt";
+    string outputFile = iterDir + "domain.txt";
     writeOutputFile<int>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->id;
     });
 
     // Write out pressure file
-    outputFile = outputDir + "p.txt";
+    outputFile = iterDir + "p.txt";
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->p;
     });
 
     // Write out order parameter file
-    outputFile = outputDir + "phi.txt";
+    outputFile = iterDir + "phi.txt";
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->phi;
     });
 
     // Write out velocity (x-direction) file
-    outputFile = outputDir + "uX.txt";
+    outputFile = iterDir + "uX.txt";
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->uX;
     });
 
     // Write out velocity (y-direction) file
-    outputFile = outputDir + "uY.txt";
+    outputFile = iterDir + "uY.txt";
     writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
         return nodes[i][j]->uY;
     });
 
-    // Write all stored residuals to a single text file
-    ofstream resFile(residualsFile, ios::app);
+    // Check if this is the first save of the run
+    bool isFirstSave = (iter == config["simulation"]["save_domain_iter"]);
+
+    ofstream resFile;
+    if (isFirstSave) {
+        resFile.open(residualsFile);
+    } else {
+        resFile.open(residualsFile, ios::app);
+    }
+
     if (resFile.is_open()) {
         size_t firstIteration = iter - resUVec.size() + 1;
 

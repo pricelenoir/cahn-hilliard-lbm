@@ -101,7 +101,7 @@ void sourceG(Domain &domain, Constants &constants) {
     }
 }
 
-void sourceH(Domain &domain, Constants &constants) {
+void sourceH(Node* node, Domain &domain, Constants &constants) {
     // Definition of constants
     double phi1 = constants.phi1;
     double phi2 = constants.phi2;
@@ -113,31 +113,24 @@ void sourceH(Domain &domain, Constants &constants) {
     double L2NormEGradPhi, interfaceNormalX, interfaceNormalY;
     double L2NormThrshld = 0.00005;
 
-    Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
-            node = domain.nodes[i][j];
+    // Gradient calculations of phi
+    derivativeX(node, domain, &Node::phi, &Node::dphidx);
+    derivativeY(node, domain, &Node::phi, &Node::dphidy);
 
-            // Gradient calculations of phi
-            derivativeX(node, domain, &Node::phi, &Node::dphidx);
-            derivativeY(node, domain, &Node::phi, &Node::dphidy);
+    L2NormEGradPhi = sqrt(pow(node->dphidx, 2) + pow(node->dphidy, 2));
+    
+    if (node->id != 20) {
+        if (L2NormEGradPhi >= L2NormThrshld) {
+            interfaceNormalX = node->dphidx / L2NormEGradPhi;
+            interfaceNormalY = node->dphidy / L2NormEGradPhi;
+        }
 
-            L2NormEGradPhi = sqrt(pow(node->dphidx, 2) + pow(node->dphidy, 2));
-            
-            if (node->id != 20) {
-                if (L2NormEGradPhi >= L2NormThrshld) {
-                    interfaceNormalX = node->dphidx / L2NormEGradPhi;
-                    interfaceNormalY = node->dphidy / L2NormEGradPhi;
-                }
-
-                node->forceX = -4.0 * (node->phi - phi1) * (node->phi - phi2) * (0.25 * sqrt(2.0 * beta / k)) * interfaceNormalX / (phi1 - phi2);
-                node->forceY = -4.0 * (node->phi - phi1) * (node->phi - phi2) * (0.25 * sqrt(2.0 * beta / k)) * interfaceNormalY / (phi1 - phi2);
-                                
-                for (int k = 0; k < 9; k++) {
-                    eU = e[k][0] * node->uX + e[k][1] * node->uY;
-                    node->sourceH[k] = 0.5 * w[k] * mbl * (3.0 * (e[k][0] - node->uX) * node->forceX + 3.0 * (e[k][1] - node->uY) * node->forceY + 9.0 * eU * (e[k][0] * node->forceX + e[k][1] * node->forceY));
-                }
-            }
+        node->forceX = -4.0 * (node->phi - phi1) * (node->phi - phi2) * (0.25 * sqrt(2.0 * beta / k)) * interfaceNormalX / (phi1 - phi2);
+        node->forceY = -4.0 * (node->phi - phi1) * (node->phi - phi2) * (0.25 * sqrt(2.0 * beta / k)) * interfaceNormalY / (phi1 - phi2);
+                        
+        for (int k = 0; k < 9; k++) {
+            eU = e[k][0] * node->uX + e[k][1] * node->uY;
+            node->sourceH[k] = 0.5 * w[k] * mbl * (3.0 * (e[k][0] - node->uX) * node->forceX + 3.0 * (e[k][1] - node->uY) * node->forceY + 9.0 * eU * (e[k][0] * node->forceX + e[k][1] * node->forceY));
         }
     }
 }

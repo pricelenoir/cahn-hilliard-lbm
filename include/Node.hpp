@@ -55,6 +55,11 @@ public:
     double tmp;      // Temporary variable to store intermediate values
 
     // Residual values
+    double phi0;
+    double p0;
+    double uX0;
+    double uY0;
+    
     double oldUX;
     double oldUY;
     double oldPhi;

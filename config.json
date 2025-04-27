@@ -1,6 +1,6 @@
 {
     "domain": {
-        "domain_dir": "sample",
+        "domain_dir": "domain/sample",
         "lx": 0.001,
         "ly": 0.001,
         "nLB": 257,
@@ -12,7 +12,7 @@
     "simulation": {
         "max_iter": 1000,
         "save_domain_iter": 0,
-        "output_dir": "sample",
+        "output_dir": "output/sample",
         "bubble": {
             "shape": "random"
         },

@@ -35,12 +35,9 @@ public:
     long nY;                        // Number of nodes in Y direction
     int periodicity[2];             // Periodicity in X and Y directions
 
-    double resU;                    // Residual velocity
-    double resPhi;                  // Residual order parameter
-    double resP;                    // Residual pressure
-    std::vector<double> resUVec;    // Vectors to save residuals
-    std::vector<double> resPhiVec;
-    std::vector<double> resPVec;
+    std::vector<double> resUVec;    // Residual velocity iteration series
+    std::vector<double> resPhiVec;  // Residual order parameter iteration series
+    std::vector<double> resPVec;    // Residual pressure iteration series
 
     std::vector<std::vector <Node *>> nodes;
 

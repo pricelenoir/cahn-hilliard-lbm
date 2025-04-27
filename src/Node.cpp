@@ -26,9 +26,14 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	forceY = 0;
 	tmp = 0;
 
+	phi0 = 1;
+	p0 = 1;
+	uX0 = 1;
+	uY0 = 1;
+
 	oldUX = 0;
 	oldUY = 0;
-	oldPhi = 1;
+	oldPhi = 0;
 	oldP = 0;
 	oldMu = 0;
 	mu0 = 0;
