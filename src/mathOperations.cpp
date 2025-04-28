@@ -5,65 +5,64 @@ using namespace std;
 void derivativeX(Node* node, Domain &domain, double Node::*value, double Node::*derivative) {
     if (node->id == 20) return; // Solid wall
 
-    long ix = node->x;
-    long iy = node->y;
-    long nx = domain.nX;
-    long ny = domain.nY;
+    // Lookup neighboring indices
+    int ix = node->x;
+    int iy = node->y;
+    int ixp = ix + 1;
+    int ixn = ix - 1;
+    int iyp = iy + 1;
+    int iyn = iy - 1;
+    int ixpp = ixp + 1;
+    int ixnn = ixn - 1;
+    int iypp = iyp + 1;
+    int iynn = iyn - 1;
+    int nX = domain.nX;
+    int nY = domain.nY;
 
-    // Calculate neighboring indices
-    long ixp = ix + 1;
-    long ixn = ix - 1;
-    long iyp = iy + 1;
-    long iyn = iy - 1;
-    long ixpp = ixp + 1;
-    long ixnn = ixn - 1;
-    long iypp = iyp + 1;
-    long iynn = iyn - 1;
-
-    if (ixp > nx - 1) {
+    if (ixp > nX - 1) {
         ixp = ix - 1;
     } else if (ixp < 0) {
         ixp = ix + 1;
     }
 
-    if (iyp > ny - 1) {
+    if (iyp > nY - 1) {
         iyp = iy - 1;
     } else if (iyp < 0) {
         iyp = iy + 1;
     }
 
-    if (ixn > nx - 1) {
+    if (ixn > nX - 1) {
         ixn = ix - 1;
     } else if (ixn < 0) {
         ixn = ix + 1;
     }
 
-    if (iyn > ny - 1) {
+    if (iyn > nY - 1) {
         iyn = iy - 1;
     } else if (iyn < 0) {
         iyn = iy + 1;
     }
 
-    if (ixpp > nx- 1) {
-        ixpp = (ixpp == nx) ? ix : ix - 2;
+    if (ixpp > nX - 1) {
+        ixpp = (ixpp == nX) ? ix : ix - 2;
     } else if (ixpp < 0) {
         ixpp = (ixpp == -1) ? ix : ix + 2;
     }
 
-    if (iypp > ny - 1) {
-        iypp = (iypp == ny) ? iy : iy - 2;
+    if (iypp > nY - 1) {
+        iypp = (iypp == nY) ? iy : iy - 2;
     } else if (iypp < 0) {
         iypp = (iypp == -1) ? iy : iy + 2;
     }
 
-    if (ixnn > nx - 1) {
-        ixnn = (ixnn == nx) ? ix : ix - 2;
+    if (ixnn > nX - 1) {
+        ixnn = (ixnn == nX) ? ix : ix - 2;
     } else if (ixnn < 0) {
         ixnn = (ixnn == -1) ? ix : ix + 2;
     }
 
-    if (iynn > ny - 1) {
-        iynn = (iynn == ny) ? iy : iy - 2;
+    if (iynn > nY - 1) {
+        iynn = (iynn == nY) ? iy : iy - 2;
     } else if (iynn < 0) {
         iynn = (iynn == -1) ? iy : iy + 2;
     }
@@ -100,65 +99,64 @@ void derivativeX(Node* node, Domain &domain, double Node::*value, double Node::*
 void derivativeY(Node* node, Domain &domain, double Node::*value, double Node::*derivative) {
     if (node->id == 20) return; // Solid wall
 
-    long ix = node->x;
-    long iy = node->y;
-    long nx = domain.nX;
-    long ny = domain.nY;
+    // Lookup neighboring indices
+    int ix = node->x;
+    int iy = node->y;
+    int ixp = ix + 1;
+    int ixn = ix - 1;
+    int iyp = iy + 1;
+    int iyn = iy - 1;
+    int ixpp = ixp + 1;
+    int ixnn = ixn - 1;
+    int iypp = iyp + 1;
+    int iynn = iyn - 1;
+    int nX = domain.nX;
+    int nY = domain.nY;
 
-    // Calculate neighboring indices
-    long ixp = ix + 1;
-    long ixn = ix - 1;
-    long iyp = iy + 1;
-    long iyn = iy - 1;
-    long ixpp = ixp + 1;
-    long ixnn = ixn - 1;
-    long iypp = iyp + 1;
-    long iynn = iyn - 1;
-
-    if (ixp > nx - 1) {
+    if (ixp > nX - 1) {
         ixp = ix - 1;
     } else if (ixp < 0) {
         ixp = ix + 1;
     }
 
-    if (iyp > ny - 1) {
+    if (iyp > nY - 1) {
         iyp = iy - 1;
     } else if (iyp < 0) {
         iyp = iy + 1;
     }
 
-    if (ixn > nx - 1) {
+    if (ixn > nX - 1) {
         ixn = ix - 1;
     } else if (ixn < 0) {
         ixn = ix + 1;
     }
 
-    if (iyn > ny - 1) {
+    if (iyn > nY - 1) {
         iyn = iy - 1;
     } else if (iyn < 0) {
         iyn = iy + 1;
     }
 
-    if (ixpp > nx- 1) {
-        ixpp = (ixpp == nx) ? ix : ix - 2;
+    if (ixpp > nX - 1) {
+        ixpp = (ixpp == nX) ? ix : ix - 2;
     } else if (ixpp < 0) {
         ixpp = (ixpp == -1) ? ix : ix + 2;
     }
 
-    if (iypp > ny - 1) {
-        iypp = (iypp == ny) ? iy : iy - 2;
+    if (iypp > nY - 1) {
+        iypp = (iypp == nY) ? iy : iy - 2;
     } else if (iypp < 0) {
         iypp = (iypp == -1) ? iy : iy + 2;
     }
 
-    if (ixnn > nx - 1) {
-        ixnn = (ixnn == nx) ? ix : ix - 2;
+    if (ixnn > nX - 1) {
+        ixnn = (ixnn == nX) ? ix : ix - 2;
     } else if (ixnn < 0) {
         ixnn = (ixnn == -1) ? ix : ix + 2;
     }
 
-    if (iynn > ny - 1) {
-        iynn = (iynn == ny) ? iy : iy - 2;
+    if (iynn > nY - 1) {
+        iynn = (iynn == nY) ? iy : iy - 2;
     } else if (iynn < 0) {
         iynn = (iynn == -1) ? iy : iy + 2;
     }
@@ -195,10 +193,10 @@ void derivativeY(Node* node, Domain &domain, double Node::*value, double Node::*
 void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solution) {
     if (node->id == 20) return; // Solid wall
 
-    long ix = node->x;
-    long iy = node->y;
-    long nx = domain.nX;
-    long ny = domain.nY;
+    int ix = node->x;
+    int iy = node->y;
+    int nx = domain.nX;
+    int ny = domain.nY;
 
     // Define weights for calculation
     array<double, 9> w1 = {1, 4, 1, 4, -20, 4, 1, 4, 1};
@@ -207,8 +205,8 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
         case 0: {
             double sum = 0.0;
             for (int i = 0; i < 9; ++i) {
-                long ixp = ix + e[i][0];
-                long iyp = iy + e[i][1];
+                int ixp = ix + e[i][0];
+                int iyp = iy + e[i][1];
 
                 // Apply boundary checks
                 if (ixp > nx-1) {
@@ -235,8 +233,8 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
             break;
 
         case 22: {
-            long iyp = iy + 1 >= ny ? iy - 1 : iy + 1;
-            long iyn = iy - 1 < 0 ? iy + 1 : iy - 1;
+            int iyp = iy + 1 >= ny ? iy - 1 : iy + 1;
+            int iyn = iy - 1 < 0 ? iy + 1 : iy - 1;
 
             node->*solution = (2 * node->*value - 5 * domain.nodes[ix + 1][iy]->*value + 4 * domain.nodes[ix + 2][iy]->*value - domain.nodes[ix + 3][iy]->*value) +
                                 (domain.nodes[ix][iyp]->*value - 2 * node->*value + domain.nodes[ix][iyn]->*value);
@@ -249,8 +247,8 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
             break;
 
         case 24: {
-            long ixp = ix + 1 >= nx ? ix - 1 : ix + 1;
-            long ixn = ix - 1 < 0 ? ix + 1 : ix - 1;
+            int ixp = ix + 1 >= nx ? ix - 1 : ix + 1;
+            int ixn = ix - 1 < 0 ? ix + 1 : ix - 1;
 
             node->*solution = (domain.nodes[ixp][iy]->*value - 2 * node->*value + domain.nodes[ixn][iy]->*value) +
                                 (2 * node->*value - 5 * domain.nodes[ix][iy + 1]->*value + 4 * domain.nodes[ix][iy + 2]->*value - domain.nodes[ix][iy + 3]->*value);
@@ -258,8 +256,8 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
         }
 
         case 26: {
-            long ixp = ix + 1 >= nx ? ix - 1 : ix + 1;
-            long ixn = ix - 1 < 0 ? ix + 1 : ix - 1;
+            int ixp = ix + 1 >= nx ? ix - 1 : ix + 1;
+            int ixn = ix - 1 < 0 ? ix + 1 : ix - 1;
 
             node->*solution = (domain.nodes[ixp][iy]->*value - 2 * node->*value + domain.nodes[ixn][iy]->*value) +
                                 (2 * node->*value - 5 * domain.nodes[ix][iy - 1]->*value + 4 * domain.nodes[ix][iy - 2]->*value - domain.nodes[ix][iy - 3]->*value);
@@ -272,8 +270,8 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
             break;
 
         case 28: {
-            long iyp = iy + 1 >= ny ? iy - 1 : iy + 1;
-            long iyn = iy - 1 < 0 ? iy + 1 : iy - 1;
+            int iyp = iy + 1 >= ny ? iy - 1 : iy + 1;
+            int iyn = iy - 1 < 0 ? iy + 1 : iy - 1;
 
             node->*solution = (2 * node->*value - 5 * domain.nodes[ix - 1][iy]->*value + 4 * domain.nodes[ix - 2][iy]->*value - domain.nodes[ix - 3][iy]->*value) +
                                 (domain.nodes[ix][iyp]->*value - 2 * node->*value + domain.nodes[ix][iyn]->*value);
@@ -287,23 +285,23 @@ void laplace(Node* node, Domain &domain, double Node::*value, double Node::*solu
     }
 }
 
-void eGrad(Node* node, Domain &domain, double Node::*value, vector<double> Node::*gradient) {
+void eGrad(Node* node, Domain &domain, double Node::*value, array<double, 9> Node::*gradient) {
     if (node->id == 20) return; // Solid wall
 
-    long ix = node->x;
-    long iy = node->y;
-    long nx = domain.nX;
-    long ny = domain.nY;
+    int ix = node->x;
+    int iy = node->y;
+    int nx = domain.nX;
+    int ny = domain.nY;
 
     // Calculate neighboring indices
-    long ixp = ix + 1;
-    long ixn = ix - 1;
-    long iyp = iy + 1;
-    long iyn = iy - 1;
-    long ixpp = ixp + 1;
-    long ixnn = ixn - 1;
-    long iypp = iyp + 1;
-    long iynn = iyn - 1;
+    int ixp = ix + 1;
+    int ixn = ix - 1;
+    int iyp = iy + 1;
+    int iyn = iy - 1;
+    int ixpp = ixp + 1;
+    int ixnn = ixn - 1;
+    int iypp = iyp + 1;
+    int iynn = iyn - 1;
 
     for (int i = 0; i < 9; i++) {
         if (i == 4) {

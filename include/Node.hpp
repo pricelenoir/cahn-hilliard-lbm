@@ -1,12 +1,12 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <vector>
+#include <array>
 
 class Node {
 public:
-    long x;
-    long y;
+    int x;
+    int y;
 
     /* 
     Node ID Key:
@@ -80,23 +80,23 @@ public:
     double dphidy;
     double d2phidx2;
     double uSqr;
-    std::vector<double> eDvdx;
-    std::vector<double> eDudy;
+    std::array<double, 9> eDudy;
+    std::array<double, 9> eDvdx;
 
     // Particle distribution functions
-    std::vector<double> gIn;
-    std::vector<double> gOut;
-    std::vector<double> gEq;
-    std::vector<double> sourceG;
+    std::array<double, 9> gIn;
+    std::array<double, 9> gOut;
+    std::array<double, 9> gEq;
+    std::array<double, 9> sourceG;
 
-    std::vector<double> hIn;
-    std::vector<double> hOut;
-    std::vector<double> hEq;
-    std::vector<double> sourceH;
+    std::array<double, 9> hIn;
+    std::array<double, 9> hOut;
+    std::array<double, 9> hEq;
+    std::array<double, 9> sourceH;
+    
+    std::array<bool, 9> neighborLookUp; // Neighbor look up table for boundary nodes
 
-    std::vector<bool> neighborLookUp; // Neighbor look up table for boundary nodes
-
-    Node(int posX, int posY);
+    Node();
 };
 
 #endif // NODE_HPP

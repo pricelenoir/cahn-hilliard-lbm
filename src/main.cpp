@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     // Initialize simulation constants from config
     Constants constants(config);
 
-    long nX = constants.nx;
-    long nY = constants.ny;
+    int nX = constants.nx;
+    int nY = constants.ny;
     double deltaX = constants.deltaX;
     double deltaT = constants.deltaT;
     double deltaM = constants.deltaM;
@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
 
     Node* node;
     // Initial calculation of mu
-    for (long i = 0; i < nX; i++) {
-        for (long j = 0; j < nY; j++) {
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
             node = domain.nodes[i][j];
             laplace(node, domain, &Node::phi, &Node::oldMu);
             node->oldMu = node->mu0 - (constants.k * node->oldMu);
@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
     }
 
     // Initial gradient and equilibrium calculations
-    for (long i = 0; i < nX; i++) {
-        for (long j = 0; j < nY; j++) {
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
             node = domain.nodes[i][j];
 
             derivativeY(node, domain, &Node::uX, &Node::dudy);
@@ -112,15 +112,15 @@ int main(int argc, char** argv) {
             macroscopicOutflowBC(domain, constants);
             macroscopicWallBC(domain, constants);
 
-            for (long i = 0; i < nX; i++) {
-                for (long j = 0; j < nY; j++) {
+            for (int i = 0; i < nX; i++) {
+                for (int j = 0; j < nY; j++) {
                     node = domain.nodes[i][j];
                     node->oldMu = domain.nodes[i][j]->mu;
                 }
             }
 
-            for (long i = 0; i < nX; i++) {
-                for (long j = 0; j < nY; j++) {
+            for (int i = 0; i < nX; i++) {
+                for (int j = 0; j < nY; j++) {
                     node = domain.nodes[i][j];
 
                     // Gradient calculations
@@ -144,8 +144,8 @@ int main(int argc, char** argv) {
             // Update source terms
             sourceG(domain, constants);
 
-            for (long i = 0; i < nX; i++) {
-                for (long j = 0; j < nY; j++) {
+            for (int i = 0; i < nX; i++) {
+                for (int j = 0; j < nY; j++) {
                     node = domain.nodes[i][j];
 
                     sourceH(node, domain, constants);

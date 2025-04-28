@@ -14,11 +14,11 @@ void collide(Node* node, Domain &domain) {
 void stream(Node* node, Domain &domain) {
     if (node->id == 20) return; // Solid wall
 
-    long nx = domain.nX;
-    long ny = domain.nY;
-    long x = node->x;
-    long y = node->y;
-    long nextX, nextY;
+    int nx = domain.nX;
+    int ny = domain.nY;
+    int x = node->x;
+    int y = node->y;
+    int nextX, nextY;
 
     for (int i = 0; i < 9; i++) {
         nextX = x + e[i][0];

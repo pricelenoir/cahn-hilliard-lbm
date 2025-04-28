@@ -1,6 +1,8 @@
 #include "node.hpp"
 
-Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
+Node::Node() {
+	x = 0;
+	y = 0;
 	id = 0;
 
 	isBoundary = false;
@@ -51,16 +53,16 @@ Node::Node(int x_coord, int y_coord) : x(x_coord), y(y_coord) {
 	d2phidx2 = 0;
 	uSqr = 0;
 
-	eDudy.resize(9, 0);
-	eDvdx.resize(9, 0);
+    eDudy.fill(0.0);
+    eDvdx.fill(0.0);
 
-	gIn.resize(9, 0);
-	gOut.resize(9, 0);
-	gEq.resize(9, 0);
-	sourceG.resize(9, 0);
-
-	hIn.resize(9, 0);
-	hOut.resize(9, 0);
-	hEq.resize(9, 0);
-	sourceH.resize(9, 0);
+    gIn.fill(0.0);
+    gOut.fill(0.0);
+    gEq.fill(0.0);
+    sourceG.fill(0.0);
+	
+    hIn.fill(0.0);
+    hOut.fill(0.0);
+    hEq.fill(0.0);
+    sourceH.fill(0.0);
 }

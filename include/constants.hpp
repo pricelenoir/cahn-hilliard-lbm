@@ -7,12 +7,12 @@ struct Constants {
     // Define domain properties
     double lx;             // Physical domain size [meters] in x and y directions
     double ly;
-    long nLB;              // Number of lattice units (characteristic length scale)
+    int nLB;               // Number of lattice units (characteristic length scale)
     double ref_len;        // Reference length in physical units [meters]
     double deltaX;         // Reference length in 
     double deltaY;         
-    long nx;               // Number of lattice points in the x and y directions
-    long ny;
+    int nx;                // Number of lattice points in the x and y directions
+    int ny;
     double gX;             // Gravity in the x direction
     double gY;             // Gravity in the y direction
 

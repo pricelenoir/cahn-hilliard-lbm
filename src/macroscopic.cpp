@@ -18,8 +18,8 @@ void macroscopic(Domain &domain, Constants &constants) {
     double k = constants.k;
 
     Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             // Calculate gradient of phi
@@ -34,8 +34,8 @@ void macroscopic(Domain &domain, Constants &constants) {
         }
     }
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             node->pStar = 0;
@@ -43,7 +43,7 @@ void macroscopic(Domain &domain, Constants &constants) {
             node->uX = 0;
             node->uY = 0;
 
-            for (long k = 0; k < 9; k++) {
+            for (int k = 0; k < 9; k++) {
                 // Calculates composition from CH equilibrium functions
                 node->phi += node->hIn[k];
 
@@ -73,8 +73,8 @@ void macroscopic(Domain &domain, Constants &constants) {
     }
 
     // Need to iterate through entire domain before using laplace() (depends on neighboring values)
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             // Calculate mu

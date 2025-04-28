@@ -13,20 +13,24 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-Domain::Domain(long nx, long ny) : nX(nx), nY(ny) {
+Domain::Domain(int nx, int ny) : nX(nx), nY(ny) {
+    nodesChunk.resize(nX * nY); // Allocate all Nodes in one block
     nodes.resize(nX);
 
-    for (long i = 0; i < nX; ++i) {
+    for (int i = 0; i < nX; ++i) {
         nodes[i].resize(nY, nullptr);
-        for (long j = 0; j < nY; ++j) {
-            nodes[i][j] = new Node(i, j);
+        for (int j = 0; j < nY; ++j) {
+            Node* nodePtr = &nodesChunk[i * nY + j]; // Get address inside contiguous block
+            nodePtr->x = i;
+            nodePtr->y = j;
+            nodes[i][j] = nodePtr; // Point the 2D vector to the right Node
         }
     }
 }
 
 // Lambda function to read in CSV input files
 template <typename T>
-void readInputFile(long nX, long nY, const string& filename, function<void(long, long, T)> populateFunc) {
+void readInputFile(int nX, int nY, const string& filename, function<void(int, int, T)> populateFunc) {
     ifstream fin(filename);
     if (!fin.is_open()) {
         cerr << "Error opening file: " << filename << endl;
@@ -34,11 +38,11 @@ void readInputFile(long nX, long nY, const string& filename, function<void(long,
     }
 
     string line;
-    long i = 0;
+    int i = 0;
     while (getline(fin, line)) {
         stringstream ss(line);
         T value;
-        long j = 0;
+        int j = 0;
 
         while (ss >> value) {
             if (i < nX && j < nY) {
@@ -55,7 +59,7 @@ void readInputFile(long nX, long nY, const string& filename, function<void(long,
 
 // Lambda function to write CSV output files
 template <typename T>
-void writeOutputFile(long nX, long nY, const string& filename, function<T(long, long)> retrieveFunc) {
+void writeOutputFile(int nX, int nY, const string& filename, function<T(int, int)> retrieveFunc) {
     ofstream fout(filename);
     if (!fout.is_open()) {
         cerr << "Error opening file: " << filename << endl;
@@ -64,8 +68,8 @@ void writeOutputFile(long nX, long nY, const string& filename, function<T(long, 
 
     fout << fixed; // Ensure fixed-point notation for floating-point numbers
 
-    for (long i = 0; i < nX; i++) {
-        for (long j = 0; j < nY; j++) {
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
             if constexpr (is_same_v<T, double>) {
                 fout << setprecision(8) << retrieveFunc(i, j); // Set precision for doubles
             } else {
@@ -88,31 +92,31 @@ void Domain::initialize(const nlohmann::json& config, Constants &constants) {
 
     // Read in domain file
     string inputFile = domainDir + "/domain.txt";
-    readInputFile<int>(nX, nY, inputFile, [this](long i, long j, int value) {
+    readInputFile<int>(nX, nY, inputFile, [this](int i, int j, int value) {
         nodes[i][j]->id = value;
     });
 
     // Read in pressure file
     inputFile = domainDir + "/p.txt";
-    readInputFile<double>(nX, nY, inputFile, [this](long i, long j, double value) {
+    readInputFile<double>(nX, nY, inputFile, [this](int i, int j, double value) {
         nodes[i][j]->p = value;
     });
 
     // Read in order parameter file
     inputFile = domainDir + "/phi.txt";
-    readInputFile<double>(nX, nY, inputFile, [this](long i, long j, double value) {
+    readInputFile<double>(nX, nY, inputFile, [this](int i, int j, double value) {
         nodes[i][j]->phi = value;
     });
 
     // Read in velocity (x-direction) file
     inputFile = domainDir + "/uX.txt";
-    readInputFile<double>(nX, nY, inputFile, [this](long i, long j, double value) {
+    readInputFile<double>(nX, nY, inputFile, [this](int i, int j, double value) {
         nodes[i][j]->uX = value;
     });
 
     // Read in velocity (y-direction) file
     inputFile = domainDir + "/uY.txt";
-    readInputFile<double>(nX, nY, inputFile, [this](long i, long j, double value) {
+    readInputFile<double>(nX, nY, inputFile, [this](int i, int j, double value) {
         nodes[i][j]->uY = value;
     });
 
@@ -151,31 +155,31 @@ void Domain::save(const nlohmann::json& config, int iter) {
     }
 
     string outputFile = iterDir + "domain.txt";
-    writeOutputFile<int>(nX, nY, outputFile, [this](long i, long j) {
+    writeOutputFile<int>(nX, nY, outputFile, [this](int i, int j) {
         return nodes[i][j]->id;
     });
 
     // Write out pressure file
     outputFile = iterDir + "p.txt";
-    writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
+    writeOutputFile<double>(nX, nY, outputFile, [this](int i, int j) {
         return nodes[i][j]->p;
     });
 
     // Write out order parameter file
     outputFile = iterDir + "phi.txt";
-    writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
+    writeOutputFile<double>(nX, nY, outputFile, [this](int i, int j) {
         return nodes[i][j]->phi;
     });
 
     // Write out velocity (x-direction) file
     outputFile = iterDir + "uX.txt";
-    writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
+    writeOutputFile<double>(nX, nY, outputFile, [this](int i, int j) {
         return nodes[i][j]->uX;
     });
 
     // Write out velocity (y-direction) file
     outputFile = iterDir + "uY.txt";
-    writeOutputFile<double>(nX, nY, outputFile, [this](long i, long j) {
+    writeOutputFile<double>(nX, nY, outputFile, [this](int i, int j) {
         return nodes[i][j]->uY;
     });
 

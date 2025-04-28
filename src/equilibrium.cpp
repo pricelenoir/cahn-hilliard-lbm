@@ -4,10 +4,10 @@
 
 using namespace std;
 
-void equilibriumG(Node* node, Domain &domain, vector<double> Node::*g) {
+void equilibriumG(Node* node, Domain &domain, array<double, 9> Node::*g) {
     double fEq, gammaU;
-    long duE = 0;
-    long eU = 0;
+    int duE = 0;
+    int eU = 0;
 
     node->pStar = node->p / (node->rho / 3);
 
@@ -28,12 +28,12 @@ void equilibriumG(Node* node, Domain &domain, vector<double> Node::*g) {
     }
 }
 
-void equilibriumH(Node* node, Domain &domain, vector<double> Node::*h) {
+void equilibriumH(Node* node, Domain &domain, array<double, 9> Node::*h) {
     if (node->id == 20) return; // Solid wall
 
     double fEq, gammaU;
-    long duE = 0;
-    long eU = 0;
+    int duE = 0;
+    int eU = 0;
 
     for (int k = 0; k < 9; k++) {
         /* Gamma equilibrium calculation */
@@ -60,8 +60,8 @@ void sourceG(Domain &domain, Constants &constants) {
     double gY = constants.gY;
 
     Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             node->nu = (nu1 * (node->rho - rho2) + nu2 * (rho1 - node->rho)) / (rho1 - rho2);
@@ -79,8 +79,8 @@ void sourceG(Domain &domain, Constants &constants) {
         }
     }
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             derivativeX(node, domain, &Node::tmp, &Node::forceX);
@@ -90,7 +90,7 @@ void sourceG(Domain &domain, Constants &constants) {
             node->forceX = gX * node->rho + node->forceX - (1.0/3.0) * node->pStar * (rho1 - rho2) * node->dphidx + node->mu * node->dphidx;
             node->forceY = gY * node->rho + node->forceY - (1.0/3.0) * node->pStar * (rho1 - rho2) * node->dphidy + node->mu * node->dphidy;
 
-            long eU = 0;
+            int eU = 0;
             if (node->id != 20) {
                 for (int k = 0; k < 9; k++) {
                     eU = e[k][0] * node->uX + e[k][1] * node->uY;
@@ -109,7 +109,7 @@ void sourceH(Node* node, Domain &domain, Constants &constants) {
     double k = constants.k;
     double mbl = constants.mbl;
 
-    long eU = 0;
+    int eU = 0;
     double L2NormEGradPhi, interfaceNormalX, interfaceNormalY;
     double L2NormThrshld = 0.00005;
 

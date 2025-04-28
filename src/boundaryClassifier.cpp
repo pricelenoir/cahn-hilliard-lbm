@@ -4,10 +4,10 @@
 using namespace std;
 
 vector<Node*> identifyNeighbors(Domain &domain, Node* node) {
-    long x = node->x;
-    long y = node->y;
-    long nx = domain.nX;
-    long ny = domain.nY;
+    int x = node->x;
+    int y = node->y;
+    int nx = domain.nX;
+    int ny = domain.nY;
 
     vector<Node*> neighbors;
     neighbors.resize(9, nullptr);
@@ -42,10 +42,10 @@ vector<Node*> identifyNeighbors(Domain &domain, Node* node) {
         neighbors[1] = domain.nodes[x+1][y];   // Right
         neighbors[2] = domain.nodes[x+1][y+1]; // SE
         neighbors[3] = domain.nodes[x][y+1];   // Up
-        neighbors[5] = domain.nodes[x][y+1];   // Down
-        neighbors[6] = domain.nodes[x+1][y+1]; // NW
-        neighbors[7] = domain.nodes[x+1][y];   // Left
-        neighbors[8] = domain.nodes[x+1][y+1]; // SW
+        neighbors[5] = domain.nodes[x][y+1];   // Flipped down
+        neighbors[6] = domain.nodes[x+1][y+1]; // Flipped NW
+        neighbors[7] = domain.nodes[x+1][y];   // Flipped left
+        neighbors[8] = domain.nodes[x+1][y+1]; // Flipped SW
     } else if ((x == 0) && (y == ny - 1)) {
         // Top left corner
         neighbors[0] = domain.nodes[x+1][y-1]; // Flipped NE
@@ -147,49 +147,49 @@ void identifyBoundaryNodes(Domain &domain) {
                     // Electrolyte to the right
                     if (right && !(above && left && below && nw && ne && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte below
                     if (above && !(left && right && below && nw && ne && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte to the left
                     if (left && !(right && above && below && nw && ne && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte above
                     if (below && !(right && above && left && nw && ne && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte above right
                     if (nw && !(right && above && left && below && ne && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte above left
                     if (ne && !(right && above && left && below && nw && se && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte below left
                     if (se && !(right && above && left && below && nw && ne && sw)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                     
                     // Electrolyte below right
                     if (sw && !(right && above && left && below && nw && ne && se)) {
                         node->isBoundary = true;
-                        node->neighborLookUp = vector<bool>{ne, right, se, above, 0, below, nw, left, sw};
+                        node->neighborLookUp = {ne, right, se, above, 0, below, nw, left, sw};
                     }
                 }
             }
@@ -292,31 +292,35 @@ void classifyBC(Domain &domain) {
 }
 
 void identifyInletNodes(Domain &domain) {
-    for (long j = 1; j < domain.nY - 1; j++) {
+    for (int j = 1; j < domain.nY - 1; j++) {
         domain.nodes[0][j]->isInlet = true;
         domain.nodes[0][j]->id = 22;
         domain.nodes[0][j]->inletNormalNodeID = -1;
-        domain.nodes[0][j]->neighborLookUp = vector<bool>{0,0,0,0,0,0,1,1,1};
+        domain.nodes[0][j]->neighborLookUp = {0,0,0,0,0,0,1,1,1};
     }
-    domain.nodes[0][1]->inletNormalNodeID = -5;
-    domain.nodes[0][1]->neighborLookUp = vector<bool>{0,0,1,0,0,1,1,1,1};
+    // domain.nodes[0][1]->inletNormalNodeID = -5;
+    domain.nodes[0][1]->inletNormalNodeID = -3;
+    domain.nodes[0][1]->neighborLookUp = {0,0,1,0,0,1,1,1,1};
 
-    domain.nodes[0][domain.nY - 2]->inletNormalNodeID = -7;
-    domain.nodes[0][domain.nY - 2]->neighborLookUp = vector<bool>{1,0,0,1,0,0,1,1,1};
+    // domain.nodes[0][domain.nY - 2]->inletNormalNodeID = -7;
+    domain.nodes[0][domain.nY - 2]->inletNormalNodeID = -4;
+    domain.nodes[0][domain.nY - 2]->neighborLookUp = {1,0,0,1,0,0,1,1,1};
 }
 
 void identifyOutletNodes(Domain &domain) {
-    for (long j = 1; j < domain.nY - 1; j++) {
+    for (int j = 1; j < domain.nY - 1; j++) {
         domain.nodes[domain.nX - 1][j]->isOutlet = true;
         domain.nodes[domain.nX - 1][j]->id = 28;
         domain.nodes[domain.nX - 1][j]->outletNormalNodeID = -2;
-        domain.nodes[domain.nX - 1][j]->neighborLookUp = vector<bool>{1,1,1,0,0,0,0,0,0};
+        domain.nodes[domain.nX - 1][j]->neighborLookUp = {1,1,1,0,0,0,0,0,0};
     }
-    domain.nodes[domain.nX - 1][1]->outletNormalNodeID = -8;
-    domain.nodes[domain.nX - 1][1]->neighborLookUp = vector<bool>{1,1,1,0,0,1,0,0,1};
+    // domain.nodes[domain.nX - 1][1]->outletNormalNodeID = -8;
+    domain.nodes[domain.nX - 1][1]->outletNormalNodeID = -3;
+    domain.nodes[domain.nX - 1][1]->neighborLookUp = {1,1,1,0,0,1,0,0,1};
 
-    domain.nodes[domain.nX - 1][domain.nY - 2]->outletNormalNodeID = -6;
-    domain.nodes[domain.nX - 1][domain.nY - 2]->neighborLookUp = vector<bool>{1,1,1,1,0,0,1,0,0};
+    // domain.nodes[domain.nX - 1][domain.nY - 2]->outletNormalNodeID = -6;
+    domain.nodes[domain.nX - 1][domain.nY - 2]->outletNormalNodeID = -4;
+    domain.nodes[domain.nX - 1][domain.nY - 2]->neighborLookUp = {1,1,1,1,0,0,1,0,0};
 }
 
 void boundaryClassification(Domain &domain) {
@@ -325,8 +329,8 @@ void boundaryClassification(Domain &domain) {
     identifyInletNodes(domain);
     identifyOutletNodes(domain);
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             Node* node = domain.nodes[i][j];
 
                 /* 

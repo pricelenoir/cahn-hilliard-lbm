@@ -15,10 +15,10 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
     double deltaX = constants.deltaX;
     double deltaT = constants.deltaT;
 
-    long xp, xpp, yp, ypp;
+    int xp, xpp, yp, ypp;
     Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             node->oldUX = node->uX;
@@ -26,8 +26,8 @@ void macroscopicInflowBC(Domain &domain, Constants &constants) {
         }
     }
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             if (node->isInlet) {
@@ -104,10 +104,10 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
     double deltaT = constants.deltaT;
 
 
-    long xp, xpp, yp, ypp;
+    int xp, xpp, yp, ypp;
     Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             node->oldUX = node->uX;
@@ -115,8 +115,8 @@ void macroscopicOutflowBC(Domain &domain, Constants &constants) {
         }
     }
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             if (node->isOutlet) {
@@ -198,12 +198,12 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
     double phiContactAngleThreshold = 0.5 * constants.W * constants.deltaX / constants.ly;
 
     double cubicPhiFunction, gradPhiNew, gradPStarNew;
-    long xp, xpp, xppp, yp, ypp, yppp;
+    int xp, xpp, xppp, yp, ypp, yppp;
     int dx, dy;
 
     Node* node;
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             node->oldPhi = node->phi;
@@ -229,8 +229,8 @@ void macroscopicWallBC(Domain &domain, Constants &constants) {
         }
     }
 
-    for (long i = 0; i < domain.nX; i++) {
-        for (long j = 0; j < domain.nY; j++) {
+    for (int i = 0; i < domain.nX; i++) {
+        for (int j = 0; j < domain.nY; j++) {
             node = domain.nodes[i][j];
 
             derivativeX(node, domain, &Node::tmp, &Node::forceX);

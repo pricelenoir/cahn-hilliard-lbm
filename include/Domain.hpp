@@ -31,17 +31,18 @@ static double w[9] = {1.0 / 36, 1.0 / 9, 1.0 / 36, 1.0 / 9, 4.0 / 9, 1.0 / 9, 1.
 
 class Domain {
 public:
-    long nX;                        // Number of nodes in X direction
-    long nY;                        // Number of nodes in Y direction
+    int nX;                         // Number of nodes in X direction
+    int nY;                         // Number of nodes in Y direction
     int periodicity[2];             // Periodicity in X and Y directions
 
     std::vector<double> resUVec;    // Residual velocity iteration series
     std::vector<double> resPhiVec;  // Residual order parameter iteration series
     std::vector<double> resPVec;    // Residual pressure iteration series
 
-    std::vector<std::vector <Node *>> nodes;
+    std::vector<Node> nodesChunk;             // Contiguous block of all Nodes
+    std::vector<std::vector <Node *>> nodes;  // 2D vector of pointers to Nodes for easy access
 
-    Domain(long nX, long nY);
+    Domain(int nX, int nY);
     void initialize(const nlohmann::json& config, Constants &constants);
     void save(const nlohmann::json& config, int iter);
 };
