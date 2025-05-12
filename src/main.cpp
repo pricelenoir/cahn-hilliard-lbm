@@ -176,11 +176,11 @@ int main(int argc, char** argv) {
                 domain.resUVec.push_back(resU);
                 domain.resPhiVec.push_back(resPhi);
                 domain.resPVec.push_back(resP);
-            }
 
-            if (iter % saveDomainIter == 0 && iter != 1) {
-                cout << "\033[1;36m[Iteration " << right << setw(7) << iter << " / " << maxIter << "]\033[0m Saving domain...\n";
-                domain.save(config, iter);
+                if (iter % saveDomainIter == 0 && iter != 1) {
+                    cout << "\033[1;36m[Iteration " << right << setw(7) << iter << " / " << maxIter << "]\033[0m Saving domain...\n";
+                    domain.save(config, iter);
+                }
             }
 
             // Check for convergence
